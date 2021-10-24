@@ -11,19 +11,19 @@ namespace ImageQuant
 {
     public class ConverterResult
     {
-        public bool Success;
-        public string ErrorMessage;
-        public string SourcePath;
-        public string DestPath;
-        public int SourceWidth;
-        public int SourceHeight;
-        public int DestWidth;
-        public int DestHeight;
+        public bool Success { get; }
+        public string ErrorMessage { get; }
+        public string SourcePath { get; }
+        public string DestPath { get; }
+        public int SourceWidth { get; }
+        public int SourceHeight { get; }
+        public int DestWidth { get; }
+        public int DestHeight { get; }
         public FileInfo SourceFileInfo;
         public FileInfo DestFileInfo;
-        public ImageFormat ImageFormat;
-        public long ColorDepth;
-        public long Quality;
+        public QFileType ImageFormat { get; }
+        public long ColorDepth { get; }
+        public long Quality { get; }
         public Image Thumbnail;
 
         public ConverterResult()
@@ -31,7 +31,7 @@ namespace ImageQuant
 
         }
 
-        public ConverterResult(bool success, string errorMessage, string source, string dest, int sourcewidth, int sourceheight, int destwidth, int destheight, FileInfo sourceFileInfo, FileInfo destFileInfo, ImageFormat format, long quality, long depth, Image thumbnail)
+        public ConverterResult(bool success, string errorMessage, string source, string dest, int sourcewidth, int sourceheight, int destwidth, int destheight, FileInfo sourceFileInfo, FileInfo destFileInfo, QFileType format, long quality, long depth, Image thumbnail)
         {
             Success = success;
             ErrorMessage = errorMessage;

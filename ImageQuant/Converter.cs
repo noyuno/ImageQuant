@@ -14,7 +14,9 @@ namespace ImageQuant
 {
     public class Converter
     {
-        public readonly string[] ImageFormatList = new string[] { "JPEG", "GIF", "PNG", "BMP", "TIFF" };
+        //public readonly string[] ImageFormatList = new string[] { "JPEG", "GIF", "PNG", "BMP", "TIFF" };
+        public readonly string[] ImageFormatList = new string[] { "JPEG", "GIF", "PNG" };
+
 
         public string TempDir;
         public string DestDir;
@@ -37,6 +39,7 @@ namespace ImageQuant
         //public bool PngQuant = true;
         public ImageCodecInfo JpgImageCodecInfo;
         public ImageCodecInfo PngImageCodecInfo;
+        public ImageCodecInfo GifImageCodecInfo;
 
         public Converter()
         {
@@ -47,6 +50,7 @@ namespace ImageQuant
 
             JpgImageCodecInfo = QImaging.GetEncoderInfo("image/jpeg");
             PngImageCodecInfo = QImaging.GetEncoderInfo("image/png");
+            GifImageCodecInfo = QImaging.GetEncoderInfo("image/gif");
         }
 
         public void Dispose()
@@ -59,20 +63,37 @@ namespace ImageQuant
 
         public ConverterResult Convert(string sourceFilename)
         {
-            var sourceImage = Image.FromFile(sourceFilename, true);
             var sourceFileInfo = new FileInfo(sourceFilename);
-            var destFormat = Settings.Default.ChangeFormat ? QImaging.GetImageFormat(Settings.Default.Format) : QImaging.GetImageFormat(sourceFilename);
+            if (QImaging.GetFileType(sourceFilename) == QFileType.Pdf)
+            {
+                return ConvertFromPDF(sourceFilename, sourceFileInfo);
+            }
+            else
+            {
+                return ConvertImage(sourceFilename, sourceFileInfo);
+            }
+        }
+
+        private ConverterResult ConvertFromPDF(string sourceFilename, FileInfo sourceFileInfo)
+        {
+            throw new NotImplementedException();
+        }
+
+        private ConverterResult ConvertImage(string sourceFilename, FileInfo sourceFileInfo)
+        {
+            var destFormat = Settings.Default.ChangeFormat ? QImaging.GetFileType(Settings.Default.Format) : QImaging.GetFileType(sourceFilename);
             var destFilename = GetDestFilename(sourceFilename);
             if (!Directory.Exists(Path.GetDirectoryName(destFilename)))
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(destFilename));
             }
+            var sourceImage = Image.FromFile(sourceFilename, true);
             if (Settings.Default.OverwriteConfirm && File.Exists(destFilename))
             {
                 if (MessageBox.Show("ファイルが存在しますが、上書きしますか？\r\n" + destFilename,
                     "ImageQuant", MessageBoxButton.YesNo) == MessageBoxResult.No)
                 {
-                    return new ConverterResult(false, "ユーザにより取り消されました。", sourceFilename, destFilename, sourceImage.Width, sourceImage.Height, 0, 0, sourceFileInfo, null, sourceImage.RawFormat, 0, 0, null);
+                    return new ConverterResult(false, "ユーザにより取り消されました。", sourceFilename, destFilename, sourceImage.Width, sourceImage.Height, 0, 0, sourceFileInfo, null, QImaging.GetFileType(sourceImage.RawFormat), 0, 0, null);
                 }
             }
             Image destImage;
@@ -89,17 +110,32 @@ namespace ImageQuant
             if (Settings.Default.ChangeColorDepth)
                 destDepth = Settings.Default.ColorDepth < destDepth ? Settings.Default.ColorDepth : destDepth;
 
-            if (destFormat == ImageFormat.Jpeg)
+            if (destFormat == QFileType.Jpeg)
             {
                 SaveJpg(destImage, destFilename, destDepth);
             }
-            else if (destFormat == ImageFormat.Png)
+            else if (destFormat == QFileType.Png)
             {
                 SavePng(destImage, destFilename, destDepth);
+            }
+            else if (destFormat == QFileType.Gif)
+            {
+                SaveGif(destImage, destFilename, destDepth);
+            }
+            else
+            {
+                throw new NotImplementedException();
             }
             var destThumbnail = QImaging.GetThumbnail(destFilename);
             var destFileInfo = new FileInfo(destFilename);
             return new ConverterResult(true, "正常終了", sourceFilename, destFilename, sourceImage.Width, sourceImage.Height, destImage.Width, destImage.Height, sourceFileInfo, destFileInfo, destFormat, 0, destDepth, destThumbnail);
+        }
+
+        private void SaveGif(Image destImage, string destFilename, long destDepth)
+        {
+            var gifep = new EncoderParameters(1);
+            gifep.Param[0] = new EncoderParameter(Encoder.ColorDepth, destDepth);
+            destImage.Save(destFilename, GifImageCodecInfo, gifep);
         }
 
         private void SavePng(Image image, string destfilename, long depth)
@@ -107,7 +143,6 @@ namespace ImageQuant
             var pngEncoderParameters = new EncoderParameters(1);
             pngEncoderParameters.Param[0] = new EncoderParameter(Encoder.ColorDepth, depth);
             image.Save(destfilename, PngImageCodecInfo, pngEncoderParameters);
-            image.Save(destfilename, ImageFormat.Png);
             if (Settings.Default.ChangePngQuality)
             {
                 Assembly myAssembly = Assembly.GetEntryAssembly();
@@ -156,14 +191,14 @@ namespace ImageQuant
             fname = Settings.Default.Suffix ? fname + Settings.Default.SuffixName : fname;
             fname += Path.GetExtension(target);
             fname = Settings.Default.ChangeFormat ?
-                Path.ChangeExtension(fname, QImaging.GetDestExt(QImaging.GetImageFormat(Settings.Default.Format))) :
+                Path.ChangeExtension(fname, QImaging.GetExtension(QImaging.GetFileType(Settings.Default.Format))) :
                 fname;
             return Path.Combine(dir, fname);
         }
 
         public string SaveBmp(Bitmap bmp)
         {
-            string destfilename = GetDestFilename(@"\bitmap_" + (new DateTime()).ToString("yyyyMMdd-HHmmss") + QImaging.GetDestExt(ImageFormat.Bmp));
+            string destfilename = GetDestFilename(@"\bitmap_" + (new DateTime()).ToString("yyyyMMdd-HHmmss") + QImaging.GetExtension(QFileType.Bmp));
             bmp.Save(destfilename);
             return destfilename;
         }

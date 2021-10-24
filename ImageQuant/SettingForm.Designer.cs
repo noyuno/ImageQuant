@@ -371,7 +371,7 @@ namespace ImageQuant
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(264, 38);
             this.label1.TabIndex = 0;
-            this.label1.Text = "入力：PNG, JPG, BMP, TIF, GIF, PDF\r\n出力：PNG, JPG, BMP, TIF, GIF";
+            this.label1.Text = "入力：PNG, JPG, BMP, TIF, GIF, PDF\r\n出力：PNG, JPG, GIF";
             // 
             // groupBox4
             // 

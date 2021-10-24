@@ -52,13 +52,23 @@ namespace ImageQuant
             this.toolStripButton1 = new System.Windows.Forms.ToolStripSeparator();
             this.settingsToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.pictureBox = new System.Windows.Forms.PictureBox();
-            this.tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
-            this.dataGridView = new System.Windows.Forms.DataGridView();
+            this.fileInfoPropertyGrid = new System.Windows.Forms.PropertyGrid();
+            this.tabControl = new System.Windows.Forms.TabControl();
+            this.fileInfoTabPage = new System.Windows.Forms.TabPage();
+            this.resultTabPage = new System.Windows.Forms.TabPage();
+            this.resultPropertyGrid = new System.Windows.Forms.PropertyGrid();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.splitter1 = new System.Windows.Forms.Splitter();
             this.statusStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
-            this.tableLayoutPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).BeginInit();
+            this.tabControl.SuspendLayout();
+            this.fileInfoTabPage.SuspendLayout();
+            this.resultTabPage.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
             this.SuspendLayout();
             // 
             // statusStrip1
@@ -94,21 +104,22 @@ namespace ImageQuant
             this.listView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listView.HideSelection = false;
             this.listView.LabelEdit = true;
-            this.listView.Location = new System.Drawing.Point(4, 4);
+            this.listView.Location = new System.Drawing.Point(0, 0);
             this.listView.Margin = new System.Windows.Forms.Padding(4);
             this.listView.MultiSelect = false;
             this.listView.Name = "listView";
-            this.tableLayoutPanel.SetRowSpan(this.listView, 2);
             this.listView.ShowItemToolTips = true;
-            this.listView.Size = new System.Drawing.Size(449, 502);
+            this.listView.Size = new System.Drawing.Size(305, 510);
             this.listView.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.listView.TabIndex = 2;
             this.listView.UseCompatibleStateImageBehavior = false;
+            this.listView.AfterLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.listView_AfterLabelEdit);
             this.listView.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.listView_ItemChecked);
             this.listView.SelectedIndexChanged += new System.EventHandler(this.listView_SelectedIndexChanged);
             this.listView.DragDrop += new System.Windows.Forms.DragEventHandler(this.listView_DragDrop);
             this.listView.DragEnter += new System.Windows.Forms.DragEventHandler(this.listView_DragEnter);
-            this.listView.DoubleClick += new System.EventHandler(this.listView_DoubleClick);
+            this.listView.KeyUp += new System.Windows.Forms.KeyEventHandler(this.listView_KeyUp);
+            this.listView.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listView_MouseDoubleClick);
             // 
             // openToolStripButton
             // 
@@ -283,53 +294,104 @@ namespace ImageQuant
             // 
             // pictureBox
             // 
-            this.pictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureBox.Location = new System.Drawing.Point(461, 4);
+            this.pictureBox.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pictureBox.Location = new System.Drawing.Point(0, 0);
             this.pictureBox.Margin = new System.Windows.Forms.Padding(4);
             this.pictureBox.Name = "pictureBox";
-            this.pictureBox.Size = new System.Drawing.Size(450, 352);
+            this.pictureBox.Size = new System.Drawing.Size(606, 362);
+            this.pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox.TabIndex = 3;
             this.pictureBox.TabStop = false;
             this.pictureBox.DragDrop += new System.Windows.Forms.DragEventHandler(this.pictureBox_DragDrop);
             this.pictureBox.DragEnter += new System.Windows.Forms.DragEventHandler(this.pictureBox_DragEnter);
             // 
-            // tableLayoutPanel
+            // fileInfoPropertyGrid
             // 
-            this.tableLayoutPanel.ColumnCount = 2;
-            this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel.Controls.Add(this.listView, 0, 0);
-            this.tableLayoutPanel.Controls.Add(this.pictureBox, 1, 0);
-            this.tableLayoutPanel.Controls.Add(this.dataGridView, 1, 1);
-            this.tableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel.Location = new System.Drawing.Point(0, 27);
-            this.tableLayoutPanel.Name = "tableLayoutPanel";
-            this.tableLayoutPanel.RowCount = 2;
-            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 150F));
-            this.tableLayoutPanel.Size = new System.Drawing.Size(915, 510);
-            this.tableLayoutPanel.TabIndex = 4;
+            this.fileInfoPropertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.fileInfoPropertyGrid.HelpVisible = false;
+            this.fileInfoPropertyGrid.Location = new System.Drawing.Point(3, 3);
+            this.fileInfoPropertyGrid.Name = "fileInfoPropertyGrid";
+            this.fileInfoPropertyGrid.Size = new System.Drawing.Size(592, 110);
+            this.fileInfoPropertyGrid.TabIndex = 4;
+            this.fileInfoPropertyGrid.ToolbarVisible = false;
             // 
-            // dataGridView
+            // tabControl
             // 
-            this.dataGridView.AllowUserToAddRows = false;
-            this.dataGridView.AllowUserToDeleteRows = false;
-            this.dataGridView.BackgroundColor = System.Drawing.SystemColors.Control;
-            this.dataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGridView.Location = new System.Drawing.Point(460, 363);
-            this.dataGridView.Name = "dataGridView";
-            this.dataGridView.RowHeadersWidth = 51;
-            this.dataGridView.RowTemplate.Height = 24;
-            this.dataGridView.Size = new System.Drawing.Size(452, 144);
-            this.dataGridView.TabIndex = 4;
+            this.tabControl.Controls.Add(this.fileInfoTabPage);
+            this.tabControl.Controls.Add(this.resultTabPage);
+            this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl.Location = new System.Drawing.Point(0, 362);
+            this.tabControl.Name = "tabControl";
+            this.tabControl.SelectedIndex = 0;
+            this.tabControl.Size = new System.Drawing.Size(606, 148);
+            this.tabControl.TabIndex = 4;
+            // 
+            // fileInfoTabPage
+            // 
+            this.fileInfoTabPage.Controls.Add(this.fileInfoPropertyGrid);
+            this.fileInfoTabPage.Location = new System.Drawing.Point(4, 28);
+            this.fileInfoTabPage.Name = "fileInfoTabPage";
+            this.fileInfoTabPage.Padding = new System.Windows.Forms.Padding(3);
+            this.fileInfoTabPage.Size = new System.Drawing.Size(598, 116);
+            this.fileInfoTabPage.TabIndex = 0;
+            this.fileInfoTabPage.Text = "ファイル情報";
+            this.fileInfoTabPage.UseVisualStyleBackColor = true;
+            // 
+            // resultTabPage
+            // 
+            this.resultTabPage.Controls.Add(this.resultPropertyGrid);
+            this.resultTabPage.Location = new System.Drawing.Point(4, 28);
+            this.resultTabPage.Name = "resultTabPage";
+            this.resultTabPage.Padding = new System.Windows.Forms.Padding(3);
+            this.resultTabPage.Size = new System.Drawing.Size(598, 116);
+            this.resultTabPage.TabIndex = 1;
+            this.resultTabPage.Text = "変換結果";
+            this.resultTabPage.UseVisualStyleBackColor = true;
+            // 
+            // resultPropertyGrid
+            // 
+            this.resultPropertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.resultPropertyGrid.HelpVisible = false;
+            this.resultPropertyGrid.Location = new System.Drawing.Point(3, 3);
+            this.resultPropertyGrid.Name = "resultPropertyGrid";
+            this.resultPropertyGrid.Size = new System.Drawing.Size(592, 110);
+            this.resultPropertyGrid.TabIndex = 5;
+            this.resultPropertyGrid.ToolbarVisible = false;
+            // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.Location = new System.Drawing.Point(0, 27);
+            this.splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.listView);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.splitter1);
+            this.splitContainer1.Panel2.Controls.Add(this.tabControl);
+            this.splitContainer1.Panel2.Controls.Add(this.pictureBox);
+            this.splitContainer1.Size = new System.Drawing.Size(915, 510);
+            this.splitContainer1.SplitterDistance = 305;
+            this.splitContainer1.TabIndex = 5;
+            // 
+            // splitter1
+            // 
+            this.splitter1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.splitter1.Location = new System.Drawing.Point(0, 362);
+            this.splitter1.Name = "splitter1";
+            this.splitter1.Size = new System.Drawing.Size(606, 3);
+            this.splitter1.TabIndex = 4;
+            this.splitter1.TabStop = false;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(120F, 120F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(915, 571);
-            this.Controls.Add(this.tableLayoutPanel);
+            this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.statusStrip1);
             this.Font = new System.Drawing.Font("Meiryo UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
@@ -344,8 +406,13 @@ namespace ImageQuant
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
-            this.tableLayoutPanel.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).EndInit();
+            this.tabControl.ResumeLayout(false);
+            this.fileInfoTabPage.ResumeLayout(false);
+            this.resultTabPage.ResumeLayout(false);
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+            this.splitContainer1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -375,8 +442,13 @@ namespace ImageQuant
         public System.Windows.Forms.ToolStripButton settingsToolStripButton;
         public System.Windows.Forms.ToolStripTextBox pathToolStripCombo;
         public System.Windows.Forms.PictureBox pictureBox;
-        private System.Windows.Forms.DataGridView dataGridView;
-        public System.Windows.Forms.TableLayoutPanel tableLayoutPanel;
+        private System.Windows.Forms.PropertyGrid fileInfoPropertyGrid;
+        private System.Windows.Forms.TabControl tabControl;
+        private System.Windows.Forms.TabPage fileInfoTabPage;
+        private System.Windows.Forms.TabPage resultTabPage;
+        private System.Windows.Forms.PropertyGrid resultPropertyGrid;
+        private System.Windows.Forms.Splitter splitter1;
+        public System.Windows.Forms.SplitContainer splitContainer1;
     }
 }
 

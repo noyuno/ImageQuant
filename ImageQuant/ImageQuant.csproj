@@ -87,7 +87,9 @@
   <ItemGroup>
     <Compile Include="Converter.cs" />
     <Compile Include="ConverterResult.cs" />
+    <Compile Include="CustomPropertyTab.cs" />
     <Compile Include="Execution.cs" />
+    <Compile Include="QFileType.cs" />
     <Compile Include="QImaging.cs" />
     <Compile Include="ImageItem.cs" />
     <Compile Include="ListViewFileItem.cs" />
@@ -105,6 +107,7 @@
     <Compile Include="SettingForm.Designer.cs">
       <DependentUpon>SettingForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="TabPageManager.cs" />
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -116,6 +119,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="SettingForm.resx">
       <DependentUpon>SettingForm.cs</DependentUpon>
@@ -149,6 +153,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="program_icon.ico" />
+    <None Include="Resources\baseline_tune_black_48dp.png" />
+    <None Include="Resources\baseline_file_download_done_black_48dp.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

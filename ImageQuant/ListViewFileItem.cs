@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -11,8 +12,11 @@ namespace ImageQuant
 {
     class ListViewFileItem : ListViewItem
     {
-        public ConverterResult ConverterResult;
-        public FileInfo FileInfo;
+        [Category("変換結果")]
+        public ConverterResult ConverterResult { get; set; }
+
+        [Category("ファイル情報")]
+        public FileInfo FileInfo { get; set; }
 
         public ListViewFileItem():base()
         {

@@ -59,5 +59,25 @@ namespace ImageQuant.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+        /// </summary>
+        internal static System.Drawing.Bitmap baseline_file_download_done_black_48dp {
+            get {
+                object obj = ResourceManager.GetObject("baseline_file_download_done_black_48dp", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+        /// </summary>
+        internal static System.Drawing.Bitmap baseline_tune_black_48dp {
+            get {
+                object obj = ResourceManager.GetObject("baseline_tune_black_48dp", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }

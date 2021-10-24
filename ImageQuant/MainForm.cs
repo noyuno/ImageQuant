@@ -30,13 +30,16 @@ namespace ImageQuant
             get { return _ThumbnailSize; }
         }
 
-        List<ConverterResult> converterResultList;
+        //List<ConverterResult> converterResultList;
+
+        TabPageManager tabPageManager;
 
         public MainForm()
         {
             InitializeComponent();
             converter = new Converter();
-            converterResultList = new List<ConverterResult>();
+            //converterResultList = new List<ConverterResult>();
+            pictureBox.AllowDrop = true;
 
             listView.LargeImageList = new ImageList();
             listView.LargeImageList.ColorDepth = ColorDepth.Depth32Bit;
@@ -47,22 +50,26 @@ namespace ImageQuant
             //pathToolStripCombo.ComboBox.SelectedItem = converter.TempDir;
             if (Settings.Default.Preview)
             {
-                tableLayoutPanel.ColumnStyles[1] = new ColumnStyle(SizeType.Percent, 50f);
+                //tableLayoutPanel.ColumnStyles[1] = new ColumnStyle(SizeType.Percent, 50f);
+                splitContainer1.SplitterDistance = this.Width / 2;
             }
             else
             {
-                tableLayoutPanel.ColumnStyles[1] = new ColumnStyle(SizeType.Percent, 0f);
+                //tableLayoutPanel.ColumnStyles[1] = new ColumnStyle(SizeType.Percent, 0f);
+                splitContainer1.SplitterDistance = this.Width;
             }
             pathToolStripCombo.Text = converter.TempDir;
 
             openToolStripButton.Visible = false;
             aboveToolStripButton.Visible = false;
 
+            UpdateButtonEnable();
 
-            InitButtonEnable();
+            tabPageManager = new TabPageManager(tabControl);
+            UpdatePropertyGrid();
         }
 
-        private void InitButtonEnable()
+        private void UpdateButtonEnable()
         {
             toolStripProgressBar.Visible = false;
             if (converter.DestDir == "")
@@ -96,7 +103,9 @@ namespace ImageQuant
                     if (listView.CheckedItems.Count == 0 && listView.SelectedItems.Count == 0)
                     {
                         this.Text = Application.ProductName + "(変換完了)";
-                        toolStripStatusLabel.Text = $"{converterResultList.Count}枚変換完了しました。画像を選択/チェックしてください。";
+                    var counter = listView.Items.Cast<ListViewFileItem>().Where(x => x.ConverterResult != null && x.ConverterResult.Success).Count();
+                        toolStripStatusLabel.Text = $"{counter}枚変換完了しました。画像を選択/チェックしてください。";
+                        //toolStripStatusLabel.Text = $"{converterResultList.Count}枚変換完了しました。画像を選択/チェックしてください。";
                         copyToolStripButton.Enabled = false;
                         trashToolStripButton.Enabled = false;
                         zipToolStripButton.Enabled = false;
@@ -154,6 +163,7 @@ namespace ImageQuant
 
         private async void ConvertFiles(string[] filenames)
         {
+            //converterResultList.Clear();
             toolStripProgressBar.Visible = true;
             toolStripProgressBar.Maximum = filenames.Length;
 
@@ -170,9 +180,9 @@ namespace ImageQuant
             });
 
             ConverterResult[] ret = await ConvertImages(filenames, action);
-            converterResultList.AddRange(ret);
+            //converterResultList.AddRange(ret);
             toolStripProgressBar.Visible = false;
-            InitButtonEnable();
+            UpdateButtonEnable();
 
         }
 
@@ -256,11 +266,6 @@ namespace ImageQuant
         }
 
 
-        private void Zip()
-        {
-
-        }
-
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (converter != null)
@@ -269,17 +274,13 @@ namespace ImageQuant
             }
         }
 
-        //private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
-        //{
-
-        //}
-
-        //private void toolStripComboBox1_KeyDown(object sender, KeyEventArgs e)
-        //{
-
-        //}
 
         private void listView_DragDrop(object sender, DragEventArgs e)
+        {
+            ImageDragDrop(e);
+        }
+
+        private void ImageDragDrop(DragEventArgs e)
         {
             string[] files = null;
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
@@ -328,6 +329,11 @@ namespace ImageQuant
 
         private void listView_DragEnter(object sender, DragEventArgs e)
         {
+            ImageDragEnter(e);
+        }
+
+        private static void ImageDragEnter(DragEventArgs e)
+        {
             if (e.Data.GetDataPresent(DataFormats.FileDrop) ||
                 e.Data.GetDataPresent(DataFormats.Bitmap) ||
                 e.Data.GetDataPresent(DataFormats.Tiff))
@@ -342,22 +348,17 @@ namespace ImageQuant
 
         private void pictureBox_DragEnter(object sender, DragEventArgs e)
         {
-
+            ImageDragEnter(e);
         }
 
         private void pictureBox_DragDrop(object sender, DragEventArgs e)
         {
-
-        }
-
-        private void listView_DoubleClick(object sender, EventArgs e)
-        {
-
+            ImageDragDrop(e);
         }
 
         private void listView_ItemChecked(object sender, ItemCheckedEventArgs e)
         {
-            InitButtonEnable();
+            UpdateButtonEnable();
         }
 
         private void openToolStripButton_Click(object sender, EventArgs e)
@@ -367,14 +368,30 @@ namespace ImageQuant
             //if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
             //{
             //    pathToolStripCombo.ComboBox.Items.Add(dialog.FileName);
-            //    pathToolStripCombo.ComboBox.SelectedItem = dialog.FileName;
+            //    pathToolStripCombo.ComboBox.SelectedItem =
+            //    dialog.FileName;
             //}
             throw new NotImplementedException();
         }
 
         private void selectAllToolStripButton_Click(object sender, EventArgs e)
         {
-
+            var checkedFlag = false;
+            foreach (ListViewItem item in listView.Items)
+            {
+                if (!item.Checked)
+                {
+                    item.Checked = true;
+                    checkedFlag = true;
+                }
+            }
+            if (!checkedFlag)
+            {
+                foreach (ListViewItem item in listView.Items)
+                {
+                    item.Checked = false;
+                }
+            }
         }
 
         private void copyToolStripButton_Click(object sender, EventArgs e)
@@ -430,7 +447,7 @@ namespace ImageQuant
             if (zipfile !="")
             {
                 RefreshListView();
-                Process.Start("explorer.exe", "/select " + zipfile);
+                Process.Start("explorer.exe", "/select," + zipfile);
             }
         }
 
@@ -459,14 +476,117 @@ namespace ImageQuant
             form.ShowDialog();
         }
 
-        private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
 
         private void listView_SelectedIndexChanged(object sender, EventArgs e)
         {
-            InitButtonEnable();
+            UpdateButtonEnable();
+            UpdatePictureBox();
+            UpdatePropertyGrid();
+        }
+
+        private void UpdatePictureBox()
+        {
+            if (listView.SelectedItems.Count > 0)
+            {
+                var path = ((ListViewFileItem)listView.SelectedItems[0]).FileInfo.FullName;
+                if (QImaging.GetFileType(path) == QFileType.Unknown)
+                {
+                    if (pictureBox.Image != null)
+                    {
+                        pictureBox.Image.Dispose();
+                        pictureBox.Image = null;
+                    }
+                }
+                else
+                {
+                    pictureBox.ImageLocation = path;
+                }
+            }
+            else
+            {
+                if (pictureBox.Image != null)
+                {
+                    pictureBox.Image.Dispose();
+                    pictureBox.Image = null;
+                }
+            }
+        }
+
+        private void UpdatePropertyGrid()
+        {
+            if (listView.SelectedItems.Count > 0)
+            {
+                //propertyGrid.PropertyTabs.AddTabType()
+                fileInfoPropertyGrid.SelectedObject = ((ListViewFileItem)listView.SelectedItems[0]).FileInfo;
+                if (((ListViewFileItem)listView.SelectedItems[0]).ConverterResult == null)
+                {
+
+                    tabPageManager.ChangeTabPageVisible(1, false);
+                }
+                else
+                {
+                    tabPageManager.ChangeTabPageVisible(1, true);
+                    resultPropertyGrid.SelectedObject = ((ListViewFileItem)listView.SelectedItems[0]).ConverterResult;
+                }
+            }
+            else
+            {
+                tabPageManager.ChangeTabPageVisible(1, false);
+                fileInfoPropertyGrid.SelectedObject = null;
+                resultPropertyGrid.SelectedObject = null;
+            }
+        }
+
+        private void listView_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (listView.SelectedItems.Count > 0)
+            {
+                Process.Start(((ListViewFileItem)listView.SelectedItems[0]).FileInfo.FullName);
+            }
+        }
+
+        private void listView_KeyUp(object sender, KeyEventArgs e)
+        {
+            ListView lv = (ListView)sender;
+            //F2キーが離されたときは、フォーカスのあるアイテムの編集を開始
+            if (e.KeyCode == Keys.F2 && lv.FocusedItem != null && lv.LabelEdit)
+            {
+                lv.FocusedItem.BeginEdit();
+            }
+        }
+
+        private void listView_AfterLabelEdit(object sender, LabelEditEventArgs e)
+        {
+            //ラベルが変更されたか調べる
+            //e.Labelがnullならば、変更されていない
+            if (e.Label != null)
+            {
+                ListView lv = (ListView)sender;
+                //同名のアイテムがあるか調べる
+                foreach (ListViewFileItem lvi in lv.Items)
+                {
+                    //同名のアイテムがあるときは編集をキャンセルする
+                    if (lvi.Index != e.Item && lvi.Text == e.Label)
+                    {
+                        MessageBox.Show("同名のアイテムがすでにあります。");
+                        //編集をキャンセルして元に戻す
+                        e.CancelEdit = true;
+                        return;
+                    }
+                }
+                var lvfi = ((ListViewFileItem)lv.Items[e.Item]);
+                var newFilename = Path.Combine(lvfi.FileInfo.DirectoryName, e.Label);
+                try
+                {
+                    File.Move(lvfi.FileInfo.FullName, newFilename);
+                    lvfi.FileInfo = new FileInfo(newFilename);
+                }
+                catch(Exception ex)
+                {
+                    e.CancelEdit = true;
+                    MessageBox.Show(ex.Message);
+                }
+            }
         }
     }
 }
