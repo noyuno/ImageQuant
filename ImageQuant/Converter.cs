@@ -25,18 +25,14 @@ namespace ImageQuant
         {
             get
             {
+                var d = DestDir == "" ? TempDir : DestDir;
                 if (Settings.Default.CreateChildDirectory)
-                    return Path.Combine(DestDir, Settings.Default.ChildDirectory);
+                    return Path.Combine(d, Settings.Default.ChildDirectory);
                 else
-                    return DestDir;
+                    return d;
             }
         }
 
-        //public string DestDirName = "ImageQuant";
-        //public ImageFormat DestFormat;
-        //public bool ChangeJpgQuality = true;
-        //public long JpgQuality = 90;
-        //public bool PngQuant = true;
         public ImageCodecInfo JpgImageCodecInfo;
         public ImageCodecInfo PngImageCodecInfo;
         public ImageCodecInfo GifImageCodecInfo;
@@ -178,11 +174,10 @@ namespace ImageQuant
         private string GetDestFilename(string target)
         {
             string dir, fname;
-            dir = Settings.Default.SaveManualPath ? Settings.Default.SavePath : Path.GetDirectoryName(target);
-            if (dir == string.Empty)
-            {
-                dir = DestDir == "" ? TempDir : DestDir;
-            }
+            dir = Settings.Default.SaveManualPath ? Settings.Default.SavePath : DestDir;
+            dir = dir == string.Empty ? Path.GetDirectoryName(target) : dir;
+            dir = dir == string.Empty ? TempDir : dir;
+
             dir = Settings.Default.CreateChildDirectory ?
                 Path.Combine(dir, Settings.Default.ChildDirectory) :
                 dir;

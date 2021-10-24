@@ -100,6 +100,26 @@ namespace ImageQuant
             return iconIndex;
         }
 
+        public static string FileSizeToString(long fileSize)
+        {
+            string ret = fileSize + " B";
+            if (fileSize > (1024f * 1024f * 1024f))
+            {
+                ret = Math.Round((fileSize / 1024f / 1024f / 1024f), 2).ToString() + " GB";
+            }
+            else if (fileSize > (1024f * 1024f))
+            {
+                ret = Math.Round((fileSize / 1024f / 1024f), 2).ToString() + " MB";
+            }
+            else if (fileSize > 1024f)
+            {
+                ret = Math.Round((fileSize / 1024f)).ToString() + " KB";
+            }
+
+            return ret;
+        }
+
+
         public static ImageCodecInfo GetEncoderInfo(string mineType)
         {
             ImageCodecInfo[] encs = ImageCodecInfo.GetImageEncoders();

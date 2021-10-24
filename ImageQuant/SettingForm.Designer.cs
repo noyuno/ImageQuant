@@ -75,6 +75,10 @@ namespace ImageQuant
             this.openExcelTemplateButton = new System.Windows.Forms.Button();
             this.tabPage6 = new System.Windows.Forms.TabPage();
             this.zipDialogCheckBox = new System.Windows.Forms.CheckBox();
+            this.tabPage7 = new System.Windows.Forms.TabPage();
+            this.githubLinkLabel = new System.Windows.Forms.LinkLabel();
+            this.versionLabel = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
             this.groupBox4.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -84,6 +88,7 @@ namespace ImageQuant
             this.groupBox7.SuspendLayout();
             this.tabPage5.SuspendLayout();
             this.tabPage6.SuspendLayout();
+            this.tabPage7.SuspendLayout();
             this.SuspendLayout();
             // 
             // qualityPngComboBox
@@ -464,6 +469,7 @@ namespace ImageQuant
             this.tabControl1.Controls.Add(this.tabPage4);
             this.tabControl1.Controls.Add(this.tabPage5);
             this.tabControl1.Controls.Add(this.tabPage6);
+            this.tabControl1.Controls.Add(this.tabPage7);
             this.tabControl1.Location = new System.Drawing.Point(12, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -643,6 +649,54 @@ namespace ImageQuant
             this.zipDialogCheckBox.UseVisualStyleBackColor = true;
             this.zipDialogCheckBox.CheckedChanged += new System.EventHandler(this.zipDialogCheckBox_CheckedChanged);
             // 
+            // tabPage7
+            // 
+            this.tabPage7.Controls.Add(this.label4);
+            this.tabPage7.Controls.Add(this.versionLabel);
+            this.tabPage7.Controls.Add(this.githubLinkLabel);
+            this.tabPage7.Location = new System.Drawing.Point(4, 28);
+            this.tabPage7.Name = "tabPage7";
+            this.tabPage7.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage7.Size = new System.Drawing.Size(568, 321);
+            this.tabPage7.TabIndex = 6;
+            this.tabPage7.Text = "バージョン情報";
+            this.tabPage7.UseVisualStyleBackColor = true;
+            // 
+            // githubLinkLabel
+            // 
+            this.githubLinkLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.githubLinkLabel.Location = new System.Drawing.Point(6, 266);
+            this.githubLinkLabel.Name = "githubLinkLabel";
+            this.githubLinkLabel.Size = new System.Drawing.Size(556, 39);
+            this.githubLinkLabel.TabIndex = 0;
+            this.githubLinkLabel.TabStop = true;
+            this.githubLinkLabel.Text = "GitHub";
+            this.githubLinkLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.githubLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.githubLinkLabel_LinkClicked);
+            // 
+            // versionLabel
+            // 
+            this.versionLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.versionLabel.Location = new System.Drawing.Point(6, 55);
+            this.versionLabel.Name = "versionLabel";
+            this.versionLabel.Size = new System.Drawing.Size(556, 34);
+            this.versionLabel.TabIndex = 1;
+            this.versionLabel.Text = "ImageQuant";
+            this.versionLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label4
+            // 
+            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label4.Location = new System.Drawing.Point(6, 121);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(556, 34);
+            this.label4.TabIndex = 1;
+            this.label4.Text = "(C) noyuno";
+            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // SettingForm
             // 
             this.AcceptButton = this.closeButton;
@@ -679,6 +733,7 @@ namespace ImageQuant
             this.tabPage5.PerformLayout();
             this.tabPage6.ResumeLayout(false);
             this.tabPage6.PerformLayout();
+            this.tabPage7.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -729,5 +784,9 @@ namespace ImageQuant
         private System.Windows.Forms.CheckBox overwriteDialogCheckBox;
         private System.Windows.Forms.TabPage tabPage6;
         private System.Windows.Forms.CheckBox zipDialogCheckBox;
+        private System.Windows.Forms.TabPage tabPage7;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label versionLabel;
+        private System.Windows.Forms.LinkLabel githubLinkLabel;
     }
 }

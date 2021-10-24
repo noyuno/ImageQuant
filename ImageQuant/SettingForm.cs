@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -83,7 +84,8 @@ namespace ImageQuant
             //
             SetMailer();
             zipDialogCheckBox.Checked = Settings.Default.ZipDialog;
-
+            //
+            versionLabel.Text = $"{Application.ProductName}  {Application.ProductVersion}";
 
             loading = false;
         }
@@ -389,6 +391,11 @@ namespace ImageQuant
             {
                 Settings.Default.ZipDialog = zipDialogCheckBox.Checked;
             }
+        }
+
+        private void githubLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Process.Start("https://github.com/noyuno/ImageQuant");
         }
     }
 }

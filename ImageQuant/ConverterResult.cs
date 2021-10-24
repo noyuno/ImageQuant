@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -11,19 +12,48 @@ namespace ImageQuant
 {
     public class ConverterResult
     {
+        [Category("0_状態")]
         public bool Success { get; }
+
+        [Category("0_状態")]
         public string ErrorMessage { get; }
+
+        [Category("1_入力")]
         public string SourcePath { get; }
+
+        [Category("2_出力")]
         public string DestPath { get; }
-        public int SourceWidth { get; }
-        public int SourceHeight { get; }
-        public int DestWidth { get; }
-        public int DestHeight { get; }
+
+        [Category("1_入力")]
+        public string SourceSize { get { return new Size(SourceWidth, SourceHeight).ToString(); } }
+
+        public int SourceWidth;
+        public int SourceHeight;
+
+        [Category("2_出力")]
+        public string DestSize { get { return new Size(DestWidth, DestHeight).ToString(); } }
+
+        public int DestWidth;
+        public int DestHeight;
+
         public FileInfo SourceFileInfo;
         public FileInfo DestFileInfo;
-        public QFileType ImageFormat { get; }
+
+        [Category("1_入力")]
+        public string SourceFileSize { get { return QImaging.FileSizeToString(SourceFileInfo.Length); } }
+
+        [Category("2_出力")]
+        public string DestFileSize { get { return QImaging.FileSizeToString(DestFileInfo.Length); } }
+
+        [Category("2_出力")]
+        public QFileType QFileType { get; }
+
+        [Category("2_出力")]
         public long ColorDepth { get; }
+
+        [Category("2_出力")]
         public long Quality { get; }
+
         public Image Thumbnail;
 
         public ConverterResult()
@@ -43,7 +73,7 @@ namespace ImageQuant
             DestHeight = destheight;
             SourceFileInfo = sourceFileInfo;
             DestFileInfo = destFileInfo;
-            ImageFormat = format;
+            QFileType = format;
             Quality = quality;
             ColorDepth = depth;
             Thumbnail = thumbnail;

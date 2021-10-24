@@ -30,7 +30,7 @@ namespace ImageQuant
             get { return _ThumbnailSize; }
         }
 
-        //List<ConverterResult> converterResultList;
+        List<ConverterResult> converterResultList;
 
         TabPageManager tabPageManager;
 
@@ -38,7 +38,7 @@ namespace ImageQuant
         {
             InitializeComponent();
             converter = new Converter();
-            //converterResultList = new List<ConverterResult>();
+            converterResultList = new List<ConverterResult>();
             pictureBox.AllowDrop = true;
 
             listView.LargeImageList = new ImageList();
@@ -62,6 +62,7 @@ namespace ImageQuant
 
             openToolStripButton.Visible = false;
             aboveToolStripButton.Visible = false;
+            mkdirToolStripButton.Visible = false;
 
             UpdateButtonEnable();
 
@@ -103,8 +104,9 @@ namespace ImageQuant
                     if (listView.CheckedItems.Count == 0 && listView.SelectedItems.Count == 0)
                     {
                         this.Text = Application.ProductName + "(変換完了)";
-                    var counter = listView.Items.Cast<ListViewFileItem>().Where(x => x.ConverterResult != null && x.ConverterResult.Success).Count();
-                        toolStripStatusLabel.Text = $"{counter}枚変換完了しました。画像を選択/チェックしてください。";
+                        //var counter = listView.Items.Cast<ListViewFileItem>().Where(x => x.ConverterResult != null && x.ConverterResult.Success).Count();
+                        var counter = converterResultList.Count;
+                        toolStripStatusLabel.Text = $"{counter}枚変換完了しました(青文字)。画像を選択/チェックしてください。";
                         //toolStripStatusLabel.Text = $"{converterResultList.Count}枚変換完了しました。画像を選択/チェックしてください。";
                         copyToolStripButton.Enabled = false;
                         trashToolStripButton.Enabled = false;
@@ -172,15 +174,18 @@ namespace ImageQuant
                 toolStripProgressBar.Value = count;
                 if (r.Success)
                 {
-                    listView.LargeImageList.Images.Add(r.DestPath, r.Thumbnail);
-                    var item = new ListViewFileItem(r, r.DestPath);
-                    listView.Items.Add(item);
+                    if (!listView.Items.Cast<ListViewFileItem>().ToList().Exists(x => x.FileInfo.FullName == r.DestFileInfo.FullName))
+                    {
+                        listView.LargeImageList.Images.Add(r.DestPath, r.Thumbnail);
+                        var item = new ListViewFileItem(r, r.DestPath);
+                        listView.Items.Add(item);
+                    }
                 }
 
             });
 
             ConverterResult[] ret = await ConvertImages(filenames, action);
-            //converterResultList.AddRange(ret);
+            converterResultList.AddRange(ret);
             toolStripProgressBar.Visible = false;
             UpdateButtonEnable();
 
@@ -228,26 +233,8 @@ namespace ImageQuant
         //    InitButtonEnable();
         //}
 
-        private string GetFileSize(long fileSize)
-        {
-            string ret = fileSize + "B";
-            if (fileSize > (1024f * 1024f * 1024f))
-            {
-                ret = Math.Round((fileSize / 1024f / 1024f / 1024f), 2).ToString() + "GB";
-            }
-            else if (fileSize > (1024f * 1024f))
-            {
-                ret = Math.Round((fileSize / 1024f / 1024f), 2).ToString() + "MB";
-            }
-            else if (fileSize > 1024f)
-            {
-                ret = Math.Round((fileSize / 1024f)).ToString() + "KB";
-            }
 
-            return ret;
-        }
-
-        private void RefreshListView()
+        private void UpdateListView()
         {
             listView.Items.Clear();
             listView.LargeImageList.Images.Clear();
@@ -257,11 +244,17 @@ namespace ImageQuant
                 List<string> files = Directory.GetFiles(converter.DestDirChild).ToList();
                 foreach (String file in files)
                 {
-                    FileInfo info = new FileInfo(file);
                     listView.LargeImageList.Images.Add(file, QImaging.GetThumbnail(file));
-                    var item = new ListViewFileItem(info, file);
-                    listView.Items.Add(item);
+                    if (converterResultList.Exists(x => x.DestFileInfo.FullName == file))
+                    {
+                        listView.Items.Add(new ListViewFileItem(converterResultList.Last(x => x.DestFileInfo.FullName == file), file));
+                    }
+                    else
+                    {
+                        listView.Items.Add(new ListViewFileItem(new FileInfo(file), file));
+                    }
                 }
+
             }
         }
 
@@ -324,7 +317,7 @@ namespace ImageQuant
                 //    })));
                 ConvertFiles(files);
             }
-            RefreshListView();
+            UpdateListView();
         }
 
         private void listView_DragEnter(object sender, DragEventArgs e)
@@ -433,12 +426,29 @@ namespace ImageQuant
 
         private void mkdirToolStripButton_Click(object sender, EventArgs e)
         {
-            
+            //var targetDir = Path.Combine(converter.DestDirChild, "新しいフォルダ");
+            //var t = targetDir;
+            //var i = 2;
+            //while(Directory.Exists(targetDir) || File.Exists(targetDir))
+            //{
+            //    targetDir = t + $"({i++}";
+            //}
+            //Directory.CreateDirectory(targetDir);
+            //UpdateListView();
+            //listView.Items.Cast<ListViewFileItem>().First(x => x.FileInfo.FullName == targetDir).BeginEdit();
         }
 
         private void explorerToolStripButton_Click(object sender, EventArgs e)
         {
-            Process.Start(converter.DestDirChild);
+            if (listView.SelectedItems.Count > 0)
+            {
+                Process.Start("explorer.exe", "/select," + ((ListViewFileItem)listView.SelectedItems[0]).FileInfo.FullName);
+            }
+            else
+            {
+                var d = Directory.Exists(converter.DestDirChild) ? converter.DestDirChild : Path.GetDirectoryName(converter.DestDirChild);
+                Process.Start("explorer.exe", d);
+            }
         }
 
         private void zipToolStripButton_Click(object sender, EventArgs e)
@@ -446,7 +456,7 @@ namespace ImageQuant
             var zipfile = Execution.Zip(GetSelectedItems());
             if (zipfile !="")
             {
-                RefreshListView();
+                UpdateListView();
                 Process.Start("explorer.exe", "/select," + zipfile);
             }
         }
@@ -587,6 +597,11 @@ namespace ImageQuant
                     MessageBox.Show(ex.Message);
                 }
             }
+        }
+
+        private void MainForm_Activated(object sender, EventArgs e)
+        {
+            UpdateListView();
         }
     }
 }
