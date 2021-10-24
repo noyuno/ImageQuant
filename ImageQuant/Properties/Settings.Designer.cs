@@ -169,7 +169,7 @@ namespace ImageQuant.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1024")]
+        [global::System.Configuration.DefaultSettingValueAttribute("1000")]
         public int MaximumSize {
             get {
                 return ((int)(this["MaximumSize"]));
@@ -193,7 +193,7 @@ namespace ImageQuant.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("PNG")]
+        [global::System.Configuration.DefaultSettingValueAttribute("JPEG")]
         public string Format {
             get {
                 return ((string)(this["Format"]));
@@ -217,7 +217,7 @@ namespace ImageQuant.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("90")]
+        [global::System.Configuration.DefaultSettingValueAttribute("80")]
         public int JpgQuality {
             get {
                 return ((int)(this["JpgQuality"]));
@@ -241,7 +241,7 @@ namespace ImageQuant.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("90")]
+        [global::System.Configuration.DefaultSettingValueAttribute("80")]
         public int PngQuality {
             get {
                 return ((int)(this["PngQuality"]));
@@ -295,6 +295,54 @@ namespace ImageQuant.Properties {
             }
             set {
                 this["Mailer"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ChangeColorDepth {
+            get {
+                return ((bool)(this["ChangeColorDepth"]));
+            }
+            set {
+                this["ChangeColorDepth"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("24")]
+        public int ColorDepth {
+            get {
+                return ((int)(this["ColorDepth"]));
+            }
+            set {
+                this["ColorDepth"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool OverwriteConfirm {
+            get {
+                return ((bool)(this["OverwriteConfirm"]));
+            }
+            set {
+                this["OverwriteConfirm"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ZipDialog {
+            get {
+                return ((bool)(this["ZipDialog"]));
+            }
+            set {
+                this["ZipDialog"] = value;
             }
         }
     }

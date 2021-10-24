@@ -22,6 +22,7 @@ namespace ImageQuant
 
         public readonly int[] QualityJpgList = new int[] { 40, 50, 60, 70, 80, 85, 90, 95, 100 };
         public readonly int[] QualityPngList = new int[] { 40, 50, 60, 70, 80, 85, 90, 95, 100 };
+        public readonly int[] ColorDepthList = new int[] { 8, 16, 24, 32 };
 
         bool loading = false;
 
@@ -42,7 +43,9 @@ namespace ImageQuant
             thumbnailSizeComboBox.DataSource = ThumbnailSizeList;
             thumbnailSizeComboBox.SelectedItem = Settings.Default.ThumbnailSize;
             previewCheckBox.Checked = Settings.Default.Preview;
-            saveRecentlyDirectoryCheckBox.Checked = Settings.Default.SaveRecentlyDirectory;
+            overwriteDialogCheckBox.Checked = Settings.Default.OverwriteConfirm;
+            //saveRecentlyDirectoryCheckBox.Checked = Settings.Default.SaveRecentlyDirectory;
+            saveRecentlyDirectoryCheckBox.Visible = false;
 
             currentDirectoryRadioButton.Checked = !Settings.Default.SaveManualPath;
             manualDirectoryRadioButton.Checked = savePathTextBox.Enabled = savePathDialogButton.Enabled =
@@ -73,10 +76,13 @@ namespace ImageQuant
             qualityPngCheckBox.Checked = qualityPngComboBox.Enabled = Settings.Default.ChangePngQuality;
             qualityPngComboBox.DataSource = QualityPngList;
             qualityPngComboBox.SelectedItem = Settings.Default.PngQuality;
+
+            colorDepthCheckBox.Checked = colorDepthComboBox.Enabled = Settings.Default.ChangeColorDepth;
+            colorDepthComboBox.DataSource = ColorDepthList;
+            colorDepthComboBox.SelectedItem = Settings.Default.ColorDepth;
             //
-            if (Settings.Default.Mailer == "mailto") mailtoRadioButton.Checked = true;
-            else if (Settings.Default.Mailer == "outlook") outlookRadioButton.Checked = true;
-            else outlookRadioButton.Checked = true;
+            SetMailer();
+            zipDialogCheckBox.Checked = Settings.Default.ZipDialog;
 
             loading = false;
         }
@@ -85,7 +91,7 @@ namespace ImageQuant
         {
             if (mailtoRadioButton.Checked) Settings.Default.Mailer = "mailto";
             else if (outlookRadioButton.Checked) Settings.Default.Mailer = "outlook";
-            else throw new NotImplementedException();
+            else outlookRadioButton.Checked = true;
         }
 
         private void closeButton_Click(object sender, EventArgs e)
@@ -145,22 +151,38 @@ namespace ImageQuant
         {
             if (!loading)
             {
-                Settings.Default.Preview =
-                    previewCheckBox.Checked;
+                Settings.Default.Preview = previewCheckBox.Checked;
+                if(Settings.Default.Preview)
+                {
+                    mainForm.tableLayoutPanel.ColumnStyles[1] = new ColumnStyle(SizeType.Percent, 50f);
+                }
+                else
+                {
+                    mainForm.tableLayoutPanel.ColumnStyles[1] = new ColumnStyle(SizeType.Percent, 0f);
+                }
+            }
+        }
+
+        private void overwriteDialogCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!loading)
+            {
+                Settings.Default.OverwriteConfirm = overwriteDialogCheckBox.Checked;
             }
         }
 
         private void saveRecentlyDirectoryCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            if (!loading)
-            {
-                Settings.Default.SaveRecentlyDirectory = saveRecentlyDirectoryCheckBox.Checked;
-                if (!saveRecentlyDirectoryCheckBox.Checked)
-                {
-                    Settings.Default.RecentlyDirectory.Clear();
-                    mainForm.pathToolStripCombo.ComboBox.Items.Clear();
-                }            
-            }
+            //if (!loading)
+            //{
+            //    Settings.Default.SaveRecentlyDirectory = saveRecentlyDirectoryCheckBox.Checked;
+            //    if (!saveRecentlyDirectoryCheckBox.Checked)
+            //    {
+            //        Settings.Default.RecentlyDirectory.Clear();
+            //        mainForm.pathToolStripCombo.ComboBox.Items.Clear();
+            //    }            
+            //}
+            throw new NotImplementedException();
 
         }
 
@@ -321,6 +343,22 @@ namespace ImageQuant
             }
         }
 
+        private void colorDepthCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!loading)
+            {
+                Settings.Default.ChangeColorDepth = colorDepthCheckBox.Checked;
+            }
+        }
+
+        private void colorDepthComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (!loading)
+            {
+                Settings.Default.ColorDepth = int.Parse(colorDepthComboBox.SelectedItem.ToString());
+            }
+        }
+
         //-------------------------------------------------------------------------------
 
         private void mailtoRadioButton_CheckedChanged(object sender, EventArgs e)
@@ -338,6 +376,14 @@ namespace ImageQuant
         private void openExcelTemplateButton_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void zipDialogCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!loading)
+            {
+                Settings.Default.ZipDialog = zipDialogCheckBox.Checked;
+            }
         }
     }
 }

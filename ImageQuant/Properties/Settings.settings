@@ -39,25 +39,25 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="MaximumSize" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">1024</Value>
+      <Value Profile="(Default)">1000</Value>
     </Setting>
     <Setting Name="ChangeFormat" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="Format" Type="System.String" Scope="User">
-      <Value Profile="(Default)">PNG</Value>
+      <Value Profile="(Default)">JPEG</Value>
     </Setting>
     <Setting Name="ChangeJpgQuality" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="JpgQuality" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">90</Value>
+      <Value Profile="(Default)">80</Value>
     </Setting>
     <Setting Name="ChangePngQuality" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="PngQuality" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">90</Value>
+      <Value Profile="(Default)">80</Value>
     </Setting>
     <Setting Name="ManualThumbnailSize" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
@@ -70,6 +70,18 @@
     </Setting>
     <Setting Name="Mailer" Type="System.String" Scope="User">
       <Value Profile="(Default)">outlook</Value>
+    </Setting>
+    <Setting Name="ChangeColorDepth" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ColorDepth" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">24</Value>
+    </Setting>
+    <Setting Name="OverwriteConfirm" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ZipDialog" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>
 </SettingsFile>

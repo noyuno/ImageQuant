@@ -15,7 +15,6 @@ using System.Runtime.InteropServices;
 using ImageQuant.Properties;
 using System.Collections.Specialized;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using Outlook = Microsoft.Office.Interop.Outlook;
 
 namespace ImageQuant
 {
@@ -23,54 +22,81 @@ namespace ImageQuant
     {
         public Converter converter;
         public bool recursive = true;
-        public int ThumbnailSize = Properties.Settings.Default.ThumbnailSize;
-        
+
+        private int _ThumbnailSize;
+        public int ThumbnailSize
+        {
+            set { listView.LargeImageList.ImageSize = new Size(value, value); _ThumbnailSize = value; }
+            get { return _ThumbnailSize; }
+        }
+
+        List<ConverterResult> converterResultList;
 
         public MainForm()
         {
             InitializeComponent();
             converter = new Converter();
+            converterResultList = new List<ConverterResult>();
+
+            listView.LargeImageList = new ImageList();
+            listView.LargeImageList.ColorDepth = ColorDepth.Depth32Bit;
+            listView.LargeImageList.TransparentColor = Color.Transparent;
+            ThumbnailSize = Settings.Default.ManualThumbnailSize ? Settings.Default.ThumbnailSize : 100;
+            //pathToolStripCombo.ComboBox.Items.AddRange(RefreshRecentoryDirectory());
+            //pathToolStripCombo.ComboBox.Items.Add(converter.TempDir);
+            //pathToolStripCombo.ComboBox.SelectedItem = converter.TempDir;
+            if (Settings.Default.Preview)
+            {
+                tableLayoutPanel.ColumnStyles[1] = new ColumnStyle(SizeType.Percent, 50f);
+            }
+            else
+            {
+                tableLayoutPanel.ColumnStyles[1] = new ColumnStyle(SizeType.Percent, 0f);
+            }
+            pathToolStripCombo.Text = converter.TempDir;
+
+            openToolStripButton.Visible = false;
+            aboveToolStripButton.Visible = false;
 
 
-            pathToolStripCombo.ComboBox.Items.AddRange(RefreshRecentoryDirectory());
-            Settings.Default.RecentlyDirectory.Add(converter.TempDir);
-            pathToolStripCombo.ComboBox.SelectedItem = converter.TempDir;
-
-            initButtonEnable();
+            InitButtonEnable();
         }
 
-        private void initButtonEnable()
+        private void InitButtonEnable()
         {
             toolStripProgressBar.Visible = false;
             if (converter.DestDir == "")
             {
+                this.Text = Application.ProductName + "(入力待ち・一時フォルダ)";
                 toolStripStatusLabel.Text = "画像をこのウィンドウにドラッグ＆ドロップしてサイズ変換します。";
                 copyToolStripButton.Enabled = false;
                 pasteToolStripButton.Enabled = false;
                 trashToolStripButton.Enabled = false;
-                aboveToolStripButton.Enabled = false;
+                //aboveToolStripButton.Enabled = false;
                 zipToolStripButton.Enabled = false;
                 attachMailToolStripButton.Enabled = false;
                 exportExcelToolStripButton.Enabled = false;
             }
             else
             {
-                aboveToolStripButton.Enabled = true;
+                //aboveToolStripButton.Enabled = true;
 
-                if (listView.Items.Count == 0)
-                {
-                    toolStripStatusLabel.Text = "画像をこのウィンドウにドラッグ＆ドロップしてサイズ変換します。";
-                    copyToolStripButton.Enabled = false;
-                    trashToolStripButton.Enabled = false;
-                    zipToolStripButton.Enabled = false;
-                    attachMailToolStripButton.Enabled = false;
-                    exportExcelToolStripButton.Enabled = false;
-                }
-                else
-                {
-                    if (listView.SelectedItems.Count == 0)
+                //if (listView.Items.Count == 0)
+                //{
+                //    toolStripStatusLabel.Text = "画像をこのウィンドウにドラッグ＆ドロップしてサイズ変換します。";
+                //    copyToolStripButton.Enabled = false;
+                //    trashToolStripButton.Enabled = false;
+                //    zipToolStripButton.Enabled = false;
+                //    attachMailToolStripButton.Enabled = false;
+                //    exportExcelToolStripButton.Enabled = false;
+                //}
+                //else
+                //{
+                pathToolStripCombo.Text = converter.DestDirChild;
+                    if (listView.CheckedItems.Count == 0 && listView.SelectedItems.Count == 0)
                     {
-                        toolStripStatusLabel.Text = "何か画像を選択してください。";
+                        this.Text = Application.ProductName + "(変換完了)";
+                        toolStripStatusLabel.Text = $"{converterResultList.Count}枚変換完了しました。画像を選択/チェックしてください。";
                         copyToolStripButton.Enabled = false;
                         trashToolStripButton.Enabled = false;
                         zipToolStripButton.Enabled = false;
@@ -79,6 +105,7 @@ namespace ImageQuant
                     }
                     else
                     {
+                        this.Text = Application.ProductName + "(変換完了)";
                         toolStripStatusLabel.Text = "選択した画像をメールに添付したりエクセルにエクスポートできます。";
                         copyToolStripButton.Enabled = true;
                         trashToolStripButton.Enabled = true;
@@ -86,92 +113,112 @@ namespace ImageQuant
                         attachMailToolStripButton.Enabled = true;
                         exportExcelToolStripButton.Enabled = true;
                     }
-                }
+                //}
 
             }
             // todo: read clipboard
         }
 
-        private object[] RefreshRecentoryDirectory()
-        {
-            object[] ret = new object[] { };
-            if (Settings.Default.RecentlyDirectory == null)
-            {
-                Settings.Default.RecentlyDirectory = new StringCollection();
-            }
-            if(Settings.Default.SaveRecentlyDirectory)
-            {
-                int p = Settings.Default.RecentlyDirectory.Count;
-                for (int i = 0; i < p; i++)
-                {
-                    if (Directory.Exists(Settings.Default.RecentlyDirectory[i]))
-                    {
-                        ret.Append(Settings.Default.RecentlyDirectory[i]);
-                    }
-                    else
-                    {
-                        Settings.Default.RecentlyDirectory.RemoveAt(i--);
-                        p--;
-                    }
+        //private object[] RefreshRecentoryDirectory()
+        //{
+        //    object[] ret = new object[] { };
+        //    if (Settings.Default.RecentlyDirectory == null)
+        //    {
+        //        Settings.Default.RecentlyDirectory = new StringCollection();
+        //    }
+        //    if(Settings.Default.SaveRecentlyDirectory)
+        //    {
+        //        int p = Settings.Default.RecentlyDirectory.Count;
+        //        for (int i = 0; i < p; i++)
+        //        {
+        //            if (Directory.Exists(Settings.Default.RecentlyDirectory[i]))
+        //            {
+        //                ret.Append(Settings.Default.RecentlyDirectory[i]);
+        //            }
+        //            else
+        //            {
+        //                Settings.Default.RecentlyDirectory.RemoveAt(i--);
+        //                p--;
+        //            }
                     
-                }
-            }
-            else
-            {
-                Settings.Default.RecentlyDirectory.Clear();
-            }
+        //        }
+        //    }
+        //    else
+        //    {
+        //        Settings.Default.RecentlyDirectory.Clear();
+        //    }
             
-            return ret;
+        //    return ret;
+
+        //}
+
+        private async void ConvertFiles(string[] filenames)
+        {
+            toolStripProgressBar.Visible = true;
+            toolStripProgressBar.Maximum = filenames.Length;
+
+            var action = new Action<int, ConverterResult>((count, r) =>
+            {
+                toolStripProgressBar.Value = count;
+                if (r.Success)
+                {
+                    listView.LargeImageList.Images.Add(r.DestPath, r.Thumbnail);
+                    var item = new ListViewFileItem(r, r.DestPath);
+                    listView.Items.Add(item);
+                }
+
+            });
+
+            ConverterResult[] ret = await ConvertImages(filenames, action);
+            converterResultList.AddRange(ret);
+            toolStripProgressBar.Visible = false;
+            InitButtonEnable();
 
         }
 
-        private Task convertImages(string[] filenames)
+        private async Task<ConverterResult[]> ConvertImages(string[] filenames, Action<int, ConverterResult> action)
         {
-            var tasks = new List<Task>();
-            toolStripProgressBar.Maximum = filenames.Length;
-            var progress = new Progress<int>((count) => {
-                toolStripProgressBar.Value = count;
-                });
+            var tasks = new List<Task<ConverterResult>>();
             var done = 0;
             for (var i = 0; i < filenames.Length; i++)
             {
                 var x = i;
-                var task = Task.Run(() => {
-                    var dest = converter.Convert(filenames[x]);
-                    if (dest == "")
-                    {
-                        // cancel
-                    }
-                    else
-                    {
-                        ((IProgress<int>)progress).Report(++done);
-                        listView.LargeImageList.Images.Add(dest, FileImaging.GetThumbnail(dest));
-                        listView.Items.Add(dest, Path.GetFileName(dest), dest);
-                    }
-                    });
+                var task = Task.Run<ConverterResult>(() =>
+                {
+                    var ret = converter.Convert(filenames[x]);
+                    this.Invoke(action, ++done, ret);
+                    return ret;
+                });
                 tasks.Add(task);
             }
-            return Task.WhenAll(tasks);
+            return await Task.WhenAll(tasks);
         }
 
-        private void convertFiles(string[] items)
-        {
-            var ret = convertImages(items);
-            if (ret.IsCompleted)
-            {
-                MessageBox.Show("完了しました");
-            }
-            else if (ret.IsFaulted)
-            {
-                MessageBox.Show("失敗しました");
-            }
-            else if (ret.IsCanceled)
-            {
-                MessageBox.Show("キャンセルされました");
-            }
-        }
+        //private void ConvertFiles(string[] items)
+        //{
+        //    // bug: do not wait running tasks
+        //    //var ret = ConvertImages(items);
+        //    //if (ret.IsCompleted)
+        //    //{
+        //    //    MessageBox.Show("完了しました");
+        //    //}
+        //    //else if (ret.IsFaulted)
+        //    //{
+        //    //    MessageBox.Show("失敗しました");
+        //    //}
+        //    //else if (ret.IsCanceled)
+        //    //{
+        //    //    MessageBox.Show("キャンセルされました");
+        //    //}
+        //    //else
+        //    //{
+        //    //    throw new NotImplementedException();
+        //    //}
+        //    ConvertImages(items);
+        //    InitButtonEnable();
+        //}
 
-        private string getFileSize(long fileSize)
+        private string GetFileSize(long fileSize)
         {
             string ret = fileSize + "B";
             if (fileSize > (1024f * 1024f * 1024f))
@@ -190,29 +237,29 @@ namespace ImageQuant
             return ret;
         }
 
-        private void refreshListView()
+        private void RefreshListView()
         {
-            List<string> files = Directory.GetFiles(converter.DestDir).ToList();
-            foreach (String file in files)
+            listView.Items.Clear();
+            listView.LargeImageList.Images.Clear();
+
+            if (Directory.Exists(converter.DestDirChild))
             {
-                FileInfo info = new FileInfo(file);
-                ListViewItem item = new ListViewItem(info.Name);
-                item.SubItems.Add(getFileSize(info.Length));
-                listView.Items.Add(item);
+                List<string> files = Directory.GetFiles(converter.DestDirChild).ToList();
+                foreach (String file in files)
+                {
+                    FileInfo info = new FileInfo(file);
+                    listView.LargeImageList.Images.Add(file, QImaging.GetThumbnail(file));
+                    var item = new ListViewFileItem(info, file);
+                    listView.Items.Add(item);
+                }
             }
         }
 
-        private void sendMail()
-        {
-            var ol = new Outlook.Application();
-            Outlook.MailItem mail = ol.CreateItem(Outlook.OlItemType.olMailItem) as Outlook.MailItem;
-            foreach (ImageItem item in listView.SelectedItems)
-            {
-                mail.Attachments.Add(item.DestPath);
-            }
-            mail.Display();
-        }
 
+        private void Zip()
+        {
+
+        }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -222,15 +269,15 @@ namespace ImageQuant
             }
         }
 
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
+        //private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        //{
 
-        }
+        //}
 
-        private void toolStripComboBox1_KeyDown(object sender, KeyEventArgs e)
-        {
+        //private void toolStripComboBox1_KeyDown(object sender, KeyEventArgs e)
+        //{
 
-        }
+        //}
 
         private void listView_DragDrop(object sender, DragEventArgs e)
         {
@@ -255,13 +302,13 @@ namespace ImageQuant
                 // expand a directory
                 //converter.DestDir = files[0] + @"\" + converter.DestDirName;
                 converter.DestDir = files[0];
-                if (Directory.Exists(converter.DestDir))
-                {
-                    refreshListView();
-                }
+                //if (Directory.Exists(converter.DestDir))
+                //{
+                //    RefreshListView();
+                //}
                 var items = Directory.GetFiles(converter.DestDir);
 
-                convertFiles(items);
+                ConvertFiles(items);
             }
             else
             {
@@ -274,8 +321,9 @@ namespace ImageQuant
                 //    files, new Converter<string, ListViewItem>((s) => {
                 //        return new ListViewItem(new ImageItem(s));
                 //    })));
-                convertFiles(files);
+                ConvertFiles(files);
             }
+            RefreshListView();
         }
 
         private void listView_DragEnter(object sender, DragEventArgs e)
@@ -309,18 +357,19 @@ namespace ImageQuant
 
         private void listView_ItemChecked(object sender, ItemCheckedEventArgs e)
         {
-
+            InitButtonEnable();
         }
 
         private void openToolStripButton_Click(object sender, EventArgs e)
         {
-            var dialog = new CommonOpenFileDialog("フォルダ選択");
-            dialog.IsFolderPicker = true;
-            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
-            {
-                pathToolStripCombo.ComboBox.Items.Add(dialog.FileName);
-                pathToolStripCombo.ComboBox.SelectedItem = dialog.FileName;
-            }
+            //var dialog = new CommonOpenFileDialog("フォルダ選択");
+            //dialog.IsFolderPicker = true;
+            //if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            //{
+            //    pathToolStripCombo.ComboBox.Items.Add(dialog.FileName);
+            //    pathToolStripCombo.ComboBox.SelectedItem = dialog.FileName;
+            //}
+            throw new NotImplementedException();
         }
 
         private void selectAllToolStripButton_Click(object sender, EventArgs e)
@@ -345,39 +394,58 @@ namespace ImageQuant
 
         private void aboveToolStripButton_Click(object sender, EventArgs e)
         {
-
+            //converter.DestDir = Path.GetDirectoryName(converter.DestDir);
+            //RefreshListView();
+            throw new NotImplementedException();
         }
 
         private void pathToolStripCombo_Click(object sender, EventArgs e)
         {
-
+            pathToolStripCombo.SelectAll();
         }
 
-        private void pathToolStripCombo_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            converter.DestDir = pathToolStripCombo.ComboBox.SelectedItem.ToString();
-            initButtonEnable();
-            refreshListView();
-        }
+        //private void pathToolStripCombo_SelectedIndexChanged(object sender, EventArgs e)
+        //{
+        //    if (converter.TempDir != pathToolStripCombo.ComboBox.SelectedItem.ToString())
+        //    {
+        //        converter.DestDir = pathToolStripCombo.ComboBox.SelectedItem.ToString();
+        //        InitButtonEnable();
+        //        RefreshListView();
+        //    }
+        //}
 
         private void mkdirToolStripButton_Click(object sender, EventArgs e)
         {
-
+            
         }
 
         private void explorerToolStripButton_Click(object sender, EventArgs e)
         {
-            Process.Start(converter.DestDir);
+            Process.Start(converter.DestDirChild);
         }
 
         private void zipToolStripButton_Click(object sender, EventArgs e)
         {
-
+            var zipfile = Execution.Zip(GetSelectedItems());
+            if (zipfile !="")
+            {
+                RefreshListView();
+                Process.Start("explorer.exe", "/select " + zipfile);
+            }
         }
 
         private void attachMailToolStripButton_Click(object sender, EventArgs e)
         {
+            Execution.SendMail(GetSelectedItems());
+        }
 
+        private string[] GetSelectedItems()
+        {
+            IEnumerable<ListViewFileItem> enu = listView.CheckedItems.Count == 0 ?
+                listView.SelectedItems.Cast<ListViewFileItem>() :
+                listView.CheckedItems.Cast<ListViewFileItem>();
+            var paths = Enumerable.Select(enu, (item) => { return item.FileInfo.FullName; }).ToArray();
+            return paths;
         }
 
         private void exportExcelToolStripButton_Click(object sender, EventArgs e)
@@ -389,6 +457,16 @@ namespace ImageQuant
         {
             var form = new SettingForm(this);
             form.ShowDialog();
+        }
+
+        private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void listView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            InitButtonEnable();
         }
     }
 }
