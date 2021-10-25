@@ -19,7 +19,7 @@ namespace ImageQuant
         public readonly int[] ThumbnailSizeList = new int[] { 25, 50, 75, 100, 150, 200 };
         public const int DefaultThumbnailSize = 100;
 
-        public readonly int[] SizeList = new int[] { 500, 1000, 1500, 2000, 3000 };
+        public readonly int[] SizeList = new int[] { 500, 750, 1000, 1500, 2000, 2500, 3000 };
 
         public readonly int[] QualityJpgList = new int[] { 40, 50, 60, 70, 80, 85, 90, 95, 100 };
         public readonly int[] QualityPngList = new int[] { 40, 50, 60, 70, 80, 85, 90, 95, 100 };

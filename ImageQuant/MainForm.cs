@@ -168,10 +168,16 @@ namespace ImageQuant
             //converterResultList.Clear();
             toolStripProgressBar.Visible = true;
             toolStripProgressBar.Maximum = filenames.Length;
+            toolStripProgressBar.Value = 0;
 
             var action = new Action<int, ConverterResult>((count, r) =>
             {
                 toolStripProgressBar.Value = count;
+            });
+
+            ConverterResult[] ret = await ConvertImages(filenames, action);
+            foreach (var r in ret)
+            {
                 if (r.Success)
                 {
                     if (!listView.Items.Cast<ListViewFileItem>().ToList().Exists(x => x.FileInfo.FullName == r.DestFileInfo.FullName))
@@ -181,10 +187,7 @@ namespace ImageQuant
                         listView.Items.Add(item);
                     }
                 }
-
-            });
-
-            ConverterResult[] ret = await ConvertImages(filenames, action);
+            }
             converterResultList.AddRange(ret);
             toolStripProgressBar.Visible = false;
             UpdateButtonEnable();
@@ -234,28 +237,76 @@ namespace ImageQuant
         //}
 
 
-        private void UpdateListView()
+        //private void UpdateListView()
+        //{
+        //    listView.Items.Clear();
+        //    listView.LargeImageList.Images.Clear();
+
+        //    if (Directory.Exists(converter.DestDirChild))
+        //    {
+        //        List<string> files = Directory.GetFiles(converter.DestDirChild).ToList();
+        //        foreach (String file in files)
+        //        {
+        //            listView.LargeImageList.Images.Add(file, QImaging.GetThumbnail(file));
+        //            if (converterResultList.Exists(x => x.DestFileInfo.FullName == file))
+        //            {
+        //                listView.Items.Add(new ListViewFileItem(converterResultList.Last(x => x.DestFileInfo.FullName == file), file));
+        //            }
+        //            else
+        //            {
+        //                listView.Items.Add(new ListViewFileItem(new FileInfo(file), file));
+        //            }
+        //        }
+
+        //    }
+        //}
+
+        private async void UpdateListView(string path)
         {
             listView.Items.Clear();
             listView.LargeImageList.Images.Clear();
-
-            if (Directory.Exists(converter.DestDirChild))
+            List<string> files = Directory.GetFiles(path).ToList();
+            toolStripProgressBar.Maximum = files.Count;
+            toolStripProgressBar.Value = 0;
+            toolStripProgressBar.Visible = true;
+            var action = new Action<int, ListViewFileItem>((count, r) =>
             {
-                List<string> files = Directory.GetFiles(converter.DestDirChild).ToList();
-                foreach (String file in files)
-                {
-                    listView.LargeImageList.Images.Add(file, QImaging.GetThumbnail(file));
-                    if (converterResultList.Exists(x => x.DestFileInfo.FullName == file))
-                    {
-                        listView.Items.Add(new ListViewFileItem(converterResultList.Last(x => x.DestFileInfo.FullName == file), file));
-                    }
-                    else
-                    {
-                        listView.Items.Add(new ListViewFileItem(new FileInfo(file), file));
-                    }
-                }
-
+                toolStripProgressBar.Value = count;
+            });
+            ListViewFileItem[] ret = await UpdateListView2(files, action);
+            foreach (var r in ret)
+            {
+                listView.LargeImageList.Images.Add(r.FileInfo.FullName, r.Thumbnail);
+                listView.Items.Add(r);
             }
+            toolStripProgressBar.Visible = false;
+            UpdateButtonEnable();
+        }
+
+        private async Task<ListViewFileItem[]> UpdateListView2(List<string> files, Action<int, ListViewFileItem> action)
+        {
+            var tasks = new List<Task<ListViewFileItem>>();
+            var done = 0;
+            for (int i = 0; i < files.Count; i++)
+            {
+                var x = i;
+                var task = Task.Run<ListViewFileItem>(() =>
+                  {
+                      ListViewFileItem ret = null;
+                      if (converterResultList.Exists(y => y.DestFileInfo.FullName == files[x]))
+                      {
+                          ret= new ListViewFileItem(converterResultList.Last(y => y.DestFileInfo.FullName == files[x]), QImaging.GetThumbnail(files[x]));
+                      }
+                      else
+                      {
+                          ret= new ListViewFileItem(new FileInfo(files[x]), QImaging.GetThumbnail(files[x]));
+                      }
+                      this.Invoke(action, ++done, ret);
+                      return ret;
+                  });
+                tasks.Add(task);
+            }
+            return await Task.WhenAll(tasks);
         }
 
 
@@ -463,7 +514,16 @@ namespace ImageQuant
 
         private void attachMailToolStripButton_Click(object sender, EventArgs e)
         {
-            Execution.SendMail(GetSelectedItems());
+            if (Settings.Default.Mailer == "outlook")
+            {
+
+            Execution.SendMailOutlook(GetSelectedItems());
+            }
+            else if (Settings.Default.Mailer=="mailto")
+            {
+                Execution.SendMailMailto(GetSelectedItems());
+
+            }
         }
 
         private string[] GetSelectedItems()

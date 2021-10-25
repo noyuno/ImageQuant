@@ -8,13 +8,14 @@ using System.IO.Compression;
 using System.IO;
 using System.Windows.Forms;
 using ImageQuant.Properties;
+using System.Diagnostics;
 
 namespace ImageQuant
 {
-    public class Execution
+    public static class Execution
     {
 
-        public static void SendMail(string[] paths)
+        public static void SendMailOutlook(string[] paths)
         {
             var ol = new Outlook.Application();
             Outlook.MailItem mail = ol.CreateItem(Outlook.OlItemType.olMailItem) as Outlook.MailItem;
@@ -23,6 +24,11 @@ namespace ImageQuant
                 mail.Attachments.Add(item);
             }
             mail.Display();
+        }
+
+        public static void SendMailMailto(string[] paths)
+        {
+            Process.Start("mailto:");
         }
 
         public static string Zip(string[] paths)
@@ -75,5 +81,6 @@ namespace ImageQuant
             ZipFile.CreateFromDirectory(zipfiledir, zipfilename);
             return zipfilename;
         }
+
     }
 }

@@ -18,12 +18,26 @@ namespace ImageQuant
         [Category("ファイル情報")]
         public FileInfo FileInfo { get; set; }
 
+        public Image Thumbnail { get; set; }
+
         public ListViewFileItem():base()
         {
         }
 
-        public ListViewFileItem(ConverterResult converterResult, string imageKey)
-            :base(Path.GetFileName(converterResult.DestPath), imageKey)
+        public ListViewFileItem(ConverterResult converterResult, Image thumbnail)
+    : base(Path.GetFileName(converterResult.DestPath), converterResult.DestFileInfo.FullName)
+        {
+            InitFromConverterResult(converterResult);
+            Thumbnail = thumbnail;
+        }
+
+        //public ListViewFileItem(ConverterResult converterResult)
+        //    :base(Path.GetFileName(converterResult.DestPath), converterResult.DestFileInfo.FullName)
+        //{
+        //    Init(converterResult);
+        //}
+
+        private void InitFromConverterResult(ConverterResult converterResult)
         {
             ConverterResult = converterResult;
             FileInfo = ConverterResult.DestFileInfo;
@@ -37,10 +51,17 @@ namespace ImageQuant
             }
         }
 
-        public ListViewFileItem(FileInfo fileInfo, string imageKey)
-            :base(fileInfo.Name, imageKey)
+        public ListViewFileItem(FileInfo fileInfo, Image thumbnail)
+            : base(fileInfo.Name, fileInfo.FullName)
         {
             FileInfo = fileInfo;
+            Thumbnail = thumbnail;
         }
+
+        //public ListViewFileItem(FileInfo fileInfo)
+        //    :base(fileInfo.Name, fileInfo.FullName)
+        //{
+        //    FileInfo = fileInfo;
+        //}
     }
 }
