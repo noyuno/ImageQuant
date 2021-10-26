@@ -106,6 +106,7 @@ namespace ImageQuant
         {
             Settings.Default.Reset();
             LoadSettings();
+            mainForm.InitializeUI();
         }
 
         private void helpButton_Click(object sender, EventArgs e)
@@ -158,13 +159,13 @@ namespace ImageQuant
                 if(Settings.Default.Preview)
                 {
                     //mainForm.tableLayoutPanel.ColumnStyles[1] = new ColumnStyle(SizeType.Percent, 50f);
-                    mainForm.splitContainer1.SplitterDistance = mainForm.Width / 2;
+                    mainForm.splitContainer.SplitterDistance = mainForm.Width / 2;
 
                 }
                 else
                 {
                     //mainForm.tableLayoutPanel.ColumnStyles[1] = new ColumnStyle(SizeType.Percent, 0f);
-                    mainForm.splitContainer1.SplitterDistance = mainForm.Width;
+                    mainForm.splitContainer.SplitterDistance = mainForm.Width;
 
                 }
             }

@@ -345,5 +345,41 @@ namespace ImageQuant.Properties {
                 this["ZipDialog"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("933, 618")]
+        public global::System.Drawing.Size FormSize {
+            get {
+                return ((global::System.Drawing.Size)(this["FormSize"]));
+            }
+            set {
+                this["FormSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("305")]
+        public int ListViewWidth {
+            get {
+                return ((int)(this["ListViewWidth"]));
+            }
+            set {
+                this["ListViewWidth"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("360")]
+        public int PictureBoxHeight {
+            get {
+                return ((int)(this["PictureBoxHeight"]));
+            }
+            set {
+                this["PictureBoxHeight"] = value;
+            }
+        }
     }
 }

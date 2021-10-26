@@ -42,6 +42,7 @@ namespace ImageQuant
             this.selectAllToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.trashToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.aboveToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.refreshToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.pathToolStripCombo = new System.Windows.Forms.ToolStripTextBox();
             this.mkdirToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
@@ -57,18 +58,18 @@ namespace ImageQuant
             this.fileInfoTabPage = new System.Windows.Forms.TabPage();
             this.resultTabPage = new System.Windows.Forms.TabPage();
             this.resultPropertyGrid = new System.Windows.Forms.PropertyGrid();
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.splitter1 = new System.Windows.Forms.Splitter();
+            this.splitContainer = new System.Windows.Forms.SplitContainer();
+            this.pictureBoxSplitter = new System.Windows.Forms.Splitter();
             this.statusStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.tabControl.SuspendLayout();
             this.fileInfoTabPage.SuspendLayout();
             this.resultTabPage.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
-            this.splitContainer1.Panel1.SuspendLayout();
-            this.splitContainer1.Panel2.SuspendLayout();
-            this.splitContainer1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
+            this.splitContainer.Panel1.SuspendLayout();
+            this.splitContainer.Panel2.SuspendLayout();
+            this.splitContainer.SuspendLayout();
             this.SuspendLayout();
             // 
             // statusStrip1
@@ -88,6 +89,7 @@ namespace ImageQuant
             // toolStripProgressBar
             // 
             this.toolStripProgressBar.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.toolStripProgressBar.Maximum = 1;
             this.toolStripProgressBar.Name = "toolStripProgressBar";
             this.toolStripProgressBar.Size = new System.Drawing.Size(140, 26);
             // 
@@ -109,17 +111,19 @@ namespace ImageQuant
             this.listView.MultiSelect = false;
             this.listView.Name = "listView";
             this.listView.ShowItemToolTips = true;
-            this.listView.Size = new System.Drawing.Size(305, 506);
+            this.listView.Size = new System.Drawing.Size(305, 498);
             this.listView.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.listView.TabIndex = 2;
             this.listView.UseCompatibleStateImageBehavior = false;
             this.listView.AfterLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.listView_AfterLabelEdit);
             this.listView.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.listView_ItemChecked);
+            this.listView.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.listView_ItemDrag);
             this.listView.SelectedIndexChanged += new System.EventHandler(this.listView_SelectedIndexChanged);
             this.listView.DragDrop += new System.Windows.Forms.DragEventHandler(this.listView_DragDrop);
             this.listView.DragEnter += new System.Windows.Forms.DragEventHandler(this.listView_DragEnter);
             this.listView.KeyUp += new System.Windows.Forms.KeyEventHandler(this.listView_KeyUp);
             this.listView.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listView_MouseDoubleClick);
+            this.listView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listView_MouseDown);
             // 
             // openToolStripButton
             // 
@@ -127,7 +131,7 @@ namespace ImageQuant
             this.openToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("openToolStripButton.Image")));
             this.openToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.openToolStripButton.Name = "openToolStripButton";
-            this.openToolStripButton.Size = new System.Drawing.Size(29, 28);
+            this.openToolStripButton.Size = new System.Drawing.Size(36, 36);
             this.openToolStripButton.Text = "フォルダーを開く";
             this.openToolStripButton.Click += new System.EventHandler(this.openToolStripButton_Click);
             // 
@@ -137,7 +141,7 @@ namespace ImageQuant
             this.copyToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("copyToolStripButton.Image")));
             this.copyToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.copyToolStripButton.Name = "copyToolStripButton";
-            this.copyToolStripButton.Size = new System.Drawing.Size(29, 24);
+            this.copyToolStripButton.Size = new System.Drawing.Size(36, 36);
             this.copyToolStripButton.Text = "選択したファイルをクリップボードにコピーする";
             this.copyToolStripButton.Click += new System.EventHandler(this.copyToolStripButton_Click);
             // 
@@ -147,14 +151,14 @@ namespace ImageQuant
             this.pasteToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("pasteToolStripButton.Image")));
             this.pasteToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.pasteToolStripButton.Name = "pasteToolStripButton";
-            this.pasteToolStripButton.Size = new System.Drawing.Size(29, 24);
+            this.pasteToolStripButton.Size = new System.Drawing.Size(36, 36);
             this.pasteToolStripButton.Text = "ファイル・画像をクリップボードから貼り付ける";
             this.pasteToolStripButton.Click += new System.EventHandler(this.pasteToolStripButton_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 27);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 39);
             // 
             // toolStrip1
             // 
@@ -168,6 +172,7 @@ namespace ImageQuant
             this.toolStripSeparator1,
             this.openToolStripButton,
             this.aboveToolStripButton,
+            this.refreshToolStripButton,
             this.pathToolStripCombo,
             this.mkdirToolStripButton,
             this.toolStripSeparator2,
@@ -179,7 +184,7 @@ namespace ImageQuant
             this.settingsToolStripButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(915, 31);
+            this.toolStrip1.Size = new System.Drawing.Size(915, 39);
             this.toolStrip1.TabIndex = 1;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -189,7 +194,7 @@ namespace ImageQuant
             this.selectAllToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("selectAllToolStripButton.Image")));
             this.selectAllToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.selectAllToolStripButton.Name = "selectAllToolStripButton";
-            this.selectAllToolStripButton.Size = new System.Drawing.Size(29, 24);
+            this.selectAllToolStripButton.Size = new System.Drawing.Size(36, 36);
             this.selectAllToolStripButton.Text = "すべて選択/選択解除";
             this.selectAllToolStripButton.Click += new System.EventHandler(this.selectAllToolStripButton_Click);
             // 
@@ -199,7 +204,7 @@ namespace ImageQuant
             this.trashToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("trashToolStripButton.Image")));
             this.trashToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.trashToolStripButton.Name = "trashToolStripButton";
-            this.trashToolStripButton.Size = new System.Drawing.Size(29, 24);
+            this.trashToolStripButton.Size = new System.Drawing.Size(36, 36);
             this.trashToolStripButton.Text = "ごみ箱に移動する";
             this.trashToolStripButton.Click += new System.EventHandler(this.trashToolStripButton_Click);
             // 
@@ -209,16 +214,26 @@ namespace ImageQuant
             this.aboveToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("aboveToolStripButton.Image")));
             this.aboveToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.aboveToolStripButton.Name = "aboveToolStripButton";
-            this.aboveToolStripButton.Size = new System.Drawing.Size(29, 24);
+            this.aboveToolStripButton.Size = new System.Drawing.Size(36, 36);
             this.aboveToolStripButton.Text = "上の階層に移動する";
             this.aboveToolStripButton.Click += new System.EventHandler(this.aboveToolStripButton_Click);
+            // 
+            // refreshToolStripButton
+            // 
+            this.refreshToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.refreshToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("refreshToolStripButton.Image")));
+            this.refreshToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.refreshToolStripButton.Name = "refreshToolStripButton";
+            this.refreshToolStripButton.Size = new System.Drawing.Size(36, 36);
+            this.refreshToolStripButton.Text = "toolStripButton2";
+            this.refreshToolStripButton.Click += new System.EventHandler(this.refreshToolStripButton_Click);
             // 
             // pathToolStripCombo
             // 
             this.pathToolStripCombo.Font = new System.Drawing.Font("Yu Gothic UI", 9F);
             this.pathToolStripCombo.Name = "pathToolStripCombo";
             this.pathToolStripCombo.ReadOnly = true;
-            this.pathToolStripCombo.Size = new System.Drawing.Size(450, 27);
+            this.pathToolStripCombo.Size = new System.Drawing.Size(450, 39);
             this.pathToolStripCombo.ToolTipText = "場所";
             this.pathToolStripCombo.Click += new System.EventHandler(this.pathToolStripCombo_Click);
             // 
@@ -228,14 +243,14 @@ namespace ImageQuant
             this.mkdirToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("mkdirToolStripButton.Image")));
             this.mkdirToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.mkdirToolStripButton.Name = "mkdirToolStripButton";
-            this.mkdirToolStripButton.Size = new System.Drawing.Size(29, 24);
+            this.mkdirToolStripButton.Size = new System.Drawing.Size(36, 36);
             this.mkdirToolStripButton.Text = "新しいフォルダーを作成する";
             this.mkdirToolStripButton.Click += new System.EventHandler(this.mkdirToolStripButton_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 27);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 39);
             // 
             // explorerToolStripButton
             // 
@@ -243,7 +258,7 @@ namespace ImageQuant
             this.explorerToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("explorerToolStripButton.Image")));
             this.explorerToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.explorerToolStripButton.Name = "explorerToolStripButton";
-            this.explorerToolStripButton.Size = new System.Drawing.Size(29, 24);
+            this.explorerToolStripButton.Size = new System.Drawing.Size(36, 36);
             this.explorerToolStripButton.Text = "この場所をWindowsエクスプローラーで開く";
             this.explorerToolStripButton.Click += new System.EventHandler(this.explorerToolStripButton_Click);
             // 
@@ -253,7 +268,7 @@ namespace ImageQuant
             this.zipToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("zipToolStripButton.Image")));
             this.zipToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.zipToolStripButton.Name = "zipToolStripButton";
-            this.zipToolStripButton.Size = new System.Drawing.Size(29, 24);
+            this.zipToolStripButton.Size = new System.Drawing.Size(36, 36);
             this.zipToolStripButton.Text = "選択した画像を圧縮する";
             this.zipToolStripButton.Click += new System.EventHandler(this.zipToolStripButton_Click);
             // 
@@ -263,7 +278,7 @@ namespace ImageQuant
             this.attachMailToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("attachMailToolStripButton.Image")));
             this.attachMailToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.attachMailToolStripButton.Name = "attachMailToolStripButton";
-            this.attachMailToolStripButton.Size = new System.Drawing.Size(29, 24);
+            this.attachMailToolStripButton.Size = new System.Drawing.Size(36, 36);
             this.attachMailToolStripButton.Text = "選択した画像をメールに添付する";
             this.attachMailToolStripButton.Click += new System.EventHandler(this.attachMailToolStripButton_Click);
             // 
@@ -273,14 +288,14 @@ namespace ImageQuant
             this.exportExcelToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("exportExcelToolStripButton.Image")));
             this.exportExcelToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.exportExcelToolStripButton.Name = "exportExcelToolStripButton";
-            this.exportExcelToolStripButton.Size = new System.Drawing.Size(29, 24);
+            this.exportExcelToolStripButton.Size = new System.Drawing.Size(36, 36);
             this.exportExcelToolStripButton.Text = "選択した画像をExcelワークブックにエクスポートする。";
             this.exportExcelToolStripButton.Click += new System.EventHandler(this.exportExcelToolStripButton_Click);
             // 
             // toolStripButton1
             // 
             this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(6, 27);
+            this.toolStripButton1.Size = new System.Drawing.Size(6, 39);
             // 
             // settingsToolStripButton
             // 
@@ -288,7 +303,7 @@ namespace ImageQuant
             this.settingsToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("settingsToolStripButton.Image")));
             this.settingsToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.settingsToolStripButton.Name = "settingsToolStripButton";
-            this.settingsToolStripButton.Size = new System.Drawing.Size(29, 24);
+            this.settingsToolStripButton.Size = new System.Drawing.Size(36, 36);
             this.settingsToolStripButton.Text = "設定...";
             this.settingsToolStripButton.Click += new System.EventHandler(this.settingsToolStripButton_Click);
             // 
@@ -298,12 +313,13 @@ namespace ImageQuant
             this.pictureBox.Location = new System.Drawing.Point(0, 0);
             this.pictureBox.Margin = new System.Windows.Forms.Padding(4);
             this.pictureBox.Name = "pictureBox";
-            this.pictureBox.Size = new System.Drawing.Size(606, 362);
+            this.pictureBox.Size = new System.Drawing.Size(606, 360);
             this.pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox.TabIndex = 3;
             this.pictureBox.TabStop = false;
             this.pictureBox.DragDrop += new System.Windows.Forms.DragEventHandler(this.pictureBox_DragDrop);
             this.pictureBox.DragEnter += new System.Windows.Forms.DragEventHandler(this.pictureBox_DragEnter);
+            this.pictureBox.Resize += new System.EventHandler(this.pictureBox_Resize);
             // 
             // fileInfoPropertyGrid
             // 
@@ -311,7 +327,7 @@ namespace ImageQuant
             this.fileInfoPropertyGrid.HelpVisible = false;
             this.fileInfoPropertyGrid.Location = new System.Drawing.Point(3, 3);
             this.fileInfoPropertyGrid.Name = "fileInfoPropertyGrid";
-            this.fileInfoPropertyGrid.Size = new System.Drawing.Size(592, 106);
+            this.fileInfoPropertyGrid.Size = new System.Drawing.Size(592, 100);
             this.fileInfoPropertyGrid.TabIndex = 4;
             this.fileInfoPropertyGrid.ToolbarVisible = false;
             // 
@@ -320,11 +336,12 @@ namespace ImageQuant
             this.tabControl.Controls.Add(this.fileInfoTabPage);
             this.tabControl.Controls.Add(this.resultTabPage);
             this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl.Location = new System.Drawing.Point(0, 362);
+            this.tabControl.Location = new System.Drawing.Point(0, 360);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(606, 144);
+            this.tabControl.Size = new System.Drawing.Size(606, 138);
             this.tabControl.TabIndex = 4;
+            this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControl_SelectedIndexChanged);
             // 
             // fileInfoTabPage
             // 
@@ -332,7 +349,7 @@ namespace ImageQuant
             this.fileInfoTabPage.Location = new System.Drawing.Point(4, 28);
             this.fileInfoTabPage.Name = "fileInfoTabPage";
             this.fileInfoTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.fileInfoTabPage.Size = new System.Drawing.Size(598, 112);
+            this.fileInfoTabPage.Size = new System.Drawing.Size(598, 106);
             this.fileInfoTabPage.TabIndex = 0;
             this.fileInfoTabPage.Text = "ファイル情報";
             this.fileInfoTabPage.UseVisualStyleBackColor = true;
@@ -343,7 +360,7 @@ namespace ImageQuant
             this.resultTabPage.Location = new System.Drawing.Point(4, 28);
             this.resultTabPage.Name = "resultTabPage";
             this.resultTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.resultTabPage.Size = new System.Drawing.Size(598, 116);
+            this.resultTabPage.Size = new System.Drawing.Size(598, 104);
             this.resultTabPage.TabIndex = 1;
             this.resultTabPage.Text = "変換結果";
             this.resultTabPage.UseVisualStyleBackColor = true;
@@ -354,44 +371,46 @@ namespace ImageQuant
             this.resultPropertyGrid.HelpVisible = false;
             this.resultPropertyGrid.Location = new System.Drawing.Point(3, 3);
             this.resultPropertyGrid.Name = "resultPropertyGrid";
-            this.resultPropertyGrid.Size = new System.Drawing.Size(592, 110);
+            this.resultPropertyGrid.Size = new System.Drawing.Size(592, 98);
             this.resultPropertyGrid.TabIndex = 5;
             this.resultPropertyGrid.ToolbarVisible = false;
             // 
-            // splitContainer1
+            // splitContainer
             // 
-            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 31);
-            this.splitContainer1.Name = "splitContainer1";
+            this.splitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer.Location = new System.Drawing.Point(0, 39);
+            this.splitContainer.Name = "splitContainer";
             // 
-            // splitContainer1.Panel1
+            // splitContainer.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.listView);
+            this.splitContainer.Panel1.Controls.Add(this.listView);
             // 
-            // splitContainer1.Panel2
+            // splitContainer.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.splitter1);
-            this.splitContainer1.Panel2.Controls.Add(this.tabControl);
-            this.splitContainer1.Panel2.Controls.Add(this.pictureBox);
-            this.splitContainer1.Size = new System.Drawing.Size(915, 506);
-            this.splitContainer1.SplitterDistance = 305;
-            this.splitContainer1.TabIndex = 5;
+            this.splitContainer.Panel2.Controls.Add(this.pictureBoxSplitter);
+            this.splitContainer.Panel2.Controls.Add(this.tabControl);
+            this.splitContainer.Panel2.Controls.Add(this.pictureBox);
+            this.splitContainer.Size = new System.Drawing.Size(915, 498);
+            this.splitContainer.SplitterDistance = 305;
+            this.splitContainer.TabIndex = 5;
+            this.splitContainer.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainer_SplitterMoved);
             // 
-            // splitter1
+            // pictureBoxSplitter
             // 
-            this.splitter1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.splitter1.Location = new System.Drawing.Point(0, 362);
-            this.splitter1.Name = "splitter1";
-            this.splitter1.Size = new System.Drawing.Size(606, 3);
-            this.splitter1.TabIndex = 4;
-            this.splitter1.TabStop = false;
+            this.pictureBoxSplitter.BackColor = System.Drawing.SystemColors.WindowFrame;
+            this.pictureBoxSplitter.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pictureBoxSplitter.Location = new System.Drawing.Point(0, 360);
+            this.pictureBoxSplitter.Name = "pictureBoxSplitter";
+            this.pictureBoxSplitter.Size = new System.Drawing.Size(606, 3);
+            this.pictureBoxSplitter.TabIndex = 4;
+            this.pictureBoxSplitter.TabStop = false;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(120F, 120F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(915, 571);
-            this.Controls.Add(this.splitContainer1);
+            this.Controls.Add(this.splitContainer);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.statusStrip1);
             this.Font = new System.Drawing.Font("Meiryo UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
@@ -402,6 +421,8 @@ namespace ImageQuant
             this.Text = "ImageQuant";
             this.Activated += new System.EventHandler(this.MainForm_Activated);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
+            this.Shown += new System.EventHandler(this.MainForm_Shown);
+            this.Resize += new System.EventHandler(this.MainForm_Resize);
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             this.toolStrip1.ResumeLayout(false);
@@ -410,10 +431,10 @@ namespace ImageQuant
             this.tabControl.ResumeLayout(false);
             this.fileInfoTabPage.ResumeLayout(false);
             this.resultTabPage.ResumeLayout(false);
-            this.splitContainer1.Panel1.ResumeLayout(false);
-            this.splitContainer1.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
-            this.splitContainer1.ResumeLayout(false);
+            this.splitContainer.Panel1.ResumeLayout(false);
+            this.splitContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).EndInit();
+            this.splitContainer.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -448,8 +469,9 @@ namespace ImageQuant
         private System.Windows.Forms.TabPage fileInfoTabPage;
         private System.Windows.Forms.TabPage resultTabPage;
         private System.Windows.Forms.PropertyGrid resultPropertyGrid;
-        private System.Windows.Forms.Splitter splitter1;
-        public System.Windows.Forms.SplitContainer splitContainer1;
+        public System.Windows.Forms.SplitContainer splitContainer;
+        private System.Windows.Forms.ToolStripButton refreshToolStripButton;
+        private System.Windows.Forms.Splitter pictureBoxSplitter;
     }
 }
 

@@ -83,5 +83,14 @@
     <Setting Name="ZipDialog" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="FormSize" Type="System.Drawing.Size" Scope="User">
+      <Value Profile="(Default)">933, 618</Value>
+    </Setting>
+    <Setting Name="ListViewWidth" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">305</Value>
+    </Setting>
+    <Setting Name="PictureBoxHeight" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">360</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

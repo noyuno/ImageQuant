@@ -76,9 +76,9 @@ namespace ImageQuant
             this.tabPage6 = new System.Windows.Forms.TabPage();
             this.zipDialogCheckBox = new System.Windows.Forms.CheckBox();
             this.tabPage7 = new System.Windows.Forms.TabPage();
-            this.githubLinkLabel = new System.Windows.Forms.LinkLabel();
-            this.versionLabel = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
+            this.versionLabel = new System.Windows.Forms.Label();
+            this.githubLinkLabel = new System.Windows.Forms.LinkLabel();
             this.groupBox4.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -662,18 +662,16 @@ namespace ImageQuant
             this.tabPage7.Text = "バージョン情報";
             this.tabPage7.UseVisualStyleBackColor = true;
             // 
-            // githubLinkLabel
+            // label4
             // 
-            this.githubLinkLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.githubLinkLabel.Location = new System.Drawing.Point(6, 266);
-            this.githubLinkLabel.Name = "githubLinkLabel";
-            this.githubLinkLabel.Size = new System.Drawing.Size(556, 39);
-            this.githubLinkLabel.TabIndex = 0;
-            this.githubLinkLabel.TabStop = true;
-            this.githubLinkLabel.Text = "GitHub";
-            this.githubLinkLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.githubLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.githubLinkLabel_LinkClicked);
+            this.label4.Location = new System.Drawing.Point(6, 121);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(556, 34);
+            this.label4.TabIndex = 1;
+            this.label4.Text = "(C) noyuno";
+            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // versionLabel
             // 
@@ -686,16 +684,18 @@ namespace ImageQuant
             this.versionLabel.Text = "ImageQuant";
             this.versionLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // label4
+            // githubLinkLabel
             // 
-            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.githubLinkLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.label4.Location = new System.Drawing.Point(6, 121);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(556, 34);
-            this.label4.TabIndex = 1;
-            this.label4.Text = "(C) noyuno";
-            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.githubLinkLabel.Location = new System.Drawing.Point(6, 266);
+            this.githubLinkLabel.Name = "githubLinkLabel";
+            this.githubLinkLabel.Size = new System.Drawing.Size(556, 39);
+            this.githubLinkLabel.TabIndex = 0;
+            this.githubLinkLabel.TabStop = true;
+            this.githubLinkLabel.Text = "GitHub";
+            this.githubLinkLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.githubLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.githubLinkLabel_LinkClicked);
             // 
             // SettingForm
             // 
@@ -715,6 +715,7 @@ namespace ImageQuant
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "SettingForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "設定";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SettingForm_FormClosing);
             this.groupBox4.ResumeLayout(false);

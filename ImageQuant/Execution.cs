@@ -9,6 +9,8 @@ using System.IO;
 using System.Windows.Forms;
 using ImageQuant.Properties;
 using System.Diagnostics;
+using System.Collections.Specialized;
+using Microsoft.VisualBasic.FileIO;
 
 namespace ImageQuant
 {
@@ -28,8 +30,10 @@ namespace ImageQuant
 
         public static void SendMailMailto(string[] paths)
         {
+            ClipboardCopy(paths);
             Process.Start("mailto:");
         }
+
 
         public static string Zip(string[] paths)
         {
@@ -82,5 +86,23 @@ namespace ImageQuant
             return zipfilename;
         }
 
+
+        public static void ClipboardCopy(string[] items)
+        {
+            var files = new StringCollection();
+            foreach (var item in items)
+            {
+                files.Add(item);
+            }
+            Clipboard.SetFileDropList(files);
+        }
+
+        public static void Trash(string[] vs)
+        {
+            foreach (var v in vs)
+            {
+                FileSystem.DeleteFile(v, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+            }
+        }
     }
 }

@@ -33,6 +33,14 @@ namespace ImageQuant
             }
         }
 
+        public string DestDirChildE
+        {
+            get
+            {
+                return Directory.Exists(DestDirChild) ? DestDirChild : Path.GetDirectoryName(DestDirChild);
+            }
+        }
+
         public ImageCodecInfo JpgImageCodecInfo;
         public ImageCodecInfo PngImageCodecInfo;
         public ImageCodecInfo GifImageCodecInfo;
