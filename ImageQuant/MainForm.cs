@@ -849,9 +849,10 @@ namespace ImageQuant
 
         private void listView_ItemDrag(object sender, ItemDragEventArgs e)
         {
-            var data = new DataObject(DataFormats.FileDrop, GetSelectedItems());
-            var effect = DragDropEffects.Copy | DragDropEffects.Move;
-            listView.DoDragDrop(data, effect);
+            // 誤動作をよく起こすので、廃止
+            //var data = new DataObject(DataFormats.FileDrop, GetSelectedItems());
+            //var effect = DragDropEffects.Copy | DragDropEffects.Move;
+            //listView.DoDragDrop(data, effect);
         }
 
         private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
