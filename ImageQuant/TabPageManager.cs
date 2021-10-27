@@ -20,8 +20,8 @@ namespace ImageQuant
                 Visible = v;
             }
         }
-        private TabPageInfo[] _tabPageInfos = null;
-        private TabControl _tabControl = null;
+        private readonly TabPageInfo[] _tabPageInfos = null;
+        private readonly TabControl _tabControl = null;
 
         /// <summary>
         /// TabPageManagerクラスのインスタンスを作成する

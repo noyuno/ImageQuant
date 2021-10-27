@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
+using SWF = System.Windows.Forms;
 
 namespace ImageQuant
 {
@@ -47,8 +48,7 @@ namespace ImageQuant
 
         public Converter()
         {
-            TempDir = Path.GetTempFileName();
-            File.Delete(TempDir);
+            TempDir = $"{Path.GetTempPath()}\\{SWF.Application.ProductName}\\{Guid.NewGuid().ToString("N").Substring(0, 12)}";
             Directory.CreateDirectory(TempDir);
             DestDir = "";
 
@@ -61,14 +61,19 @@ namespace ImageQuant
         {
             if (Directory.Exists(TempDir))
             {
-                Directory.Delete(TempDir);
+                Directory.Delete(TempDir, true);
             }
         }
 
         public ConverterResult Convert(string sourceFilename)
         {
             var sourceFileInfo = new FileInfo(sourceFilename);
-            if (QImaging.GetFileType(sourceFilename) == QFileType.Pdf)
+            var sourceFileType = QImaging.GetFileType(sourceFilename);
+            if(sourceFileType==QFileType.Unknown)
+            {
+                return new ConverterResult(false, "このファイルは画像ファイルではないようです。", sourceFilename, "", 0, 0, 0, 0, sourceFileInfo, null, QFileType.Unknown, 0, 0);
+            }
+            else if (sourceFileType == QFileType.Pdf)
             {
                 return ConvertFromPDF(sourceFilename, sourceFileInfo);
             }
@@ -80,35 +85,49 @@ namespace ImageQuant
 
         private ConverterResult ConvertFromPDF(string sourceFilename, FileInfo sourceFileInfo)
         {
-            throw new NotImplementedException();
+            MakeDest(sourceFilename, out QFileType destFormat, out string destFilename);
+            if (OverwriteConfirm(destFilename) == false)
+                return new ConverterResult(false, "ユーザにより取り消されました。", sourceFilename, destFilename, 0, 0, 0, 0, sourceFileInfo, null, QFileType.Unknown, 0, 0);
+            Assembly myAssembly = Assembly.GetEntryAssembly();
+            string imageQuantPath = myAssembly.Location;
+            string gspath = Path.GetDirectoryName(imageQuantPath) + @"\gswin64c.exe";
+            if (File.Exists(gspath))
+            {
+                using var proc = new Process();
+                proc.StartInfo.FileName = gspath;
+                proc.StartInfo.Arguments = $"-sDEVICE={Settings.Default.GSProfile} -r{Settings.Default.GSDpi} -dGraphicsAlphaBits=4 -o \"{destFilename}\" \"{sourceFilename}";
+                proc.StartInfo.CreateNoWindow = true;
+                proc.StartInfo.RedirectStandardOutput = true;
+                proc.StartInfo.RedirectStandardError = true;
+                proc.StartInfo.UseShellExecute = false;
+                proc.Start();
+                proc.WaitForExit();
+                //Debug.WriteLine(proc.StandardOutput.ReadToEnd(),"stdout");
+                //Debug.WriteLine(proc.StandardOutput.ReadToEnd(),"stderr");
+                if (proc.ExitCode != 0)
+                {
+                    throw new RuntimeException("gswin64c.exe exited with code non-zero", gspath + " " + proc.StartInfo.Arguments, proc.ExitCode, proc.StandardOutput.ReadToEnd(), proc.StandardError.ReadToEnd());
+                }
+            }
+            else
+            {
+                throw new RuntimeException("gswin64c.exeが見つかりません。", gspath, -1, "", "");
+            }
+            var destFileInfo = new FileInfo(destFilename);
+            var destImage = Image.FromFile(destFilename);
+            var ret= new ConverterResult(true, "正常終了", sourceFilename, destFilename, 0, 0, destImage.Width, destImage.Height, sourceFileInfo, destFileInfo, destFormat, 0, 24);
+            destImage.Dispose();
+            return ret;
         }
 
         private ConverterResult ConvertImage(string sourceFilename, FileInfo sourceFileInfo)
         {
-            var destFormat = Settings.Default.ChangeFormat ? QImaging.GetFileType(Settings.Default.Format) : QImaging.GetFileType(sourceFilename);
-            var destFilename = GetDestFilename(sourceFilename);
-            if (!Directory.Exists(Path.GetDirectoryName(destFilename)))
-            {
-                Directory.CreateDirectory(Path.GetDirectoryName(destFilename));
-            }
-            var sourceImage = Image.FromFile(sourceFilename, true);
-            if (Settings.Default.OverwriteConfirm && File.Exists(destFilename))
-            {
-                if (MessageBox.Show("ファイルが存在しますが、上書きしますか？\r\n" + destFilename,
-                    "ImageQuant", MessageBoxButton.YesNo) == MessageBoxResult.No)
-                {
-                    return new ConverterResult(false, "ユーザにより取り消されました。", sourceFilename, destFilename, sourceImage.Width, sourceImage.Height, 0, 0, sourceFileInfo, null, QImaging.GetFileType(sourceImage.RawFormat), 0, 0, null);
-                }
-            }
-            Image destImage;
-            if (Settings.Default.Resize)
-            {
-                destImage = QImaging.Resize(sourceImage, Settings.Default.MaximumSize);
-            }
-            else
-            {
-                destImage = sourceImage;
-            }
+            MakeDest(sourceFilename, out QFileType destFormat, out string destFilename);
+            if (OverwriteConfirm(destFilename)==false)
+                return new ConverterResult(false, "ユーザにより取り消されました。", sourceFilename, destFilename, 0, 0, 0, 0, sourceFileInfo, null, QFileType.Unknown, 0, 0);
+
+            using var sourceImage = Image.FromFile(sourceFilename, true);
+            using var destImage = Settings.Default.Resize ? QImaging.Resize(sourceImage, Settings.Default.MaximumSize) : sourceImage;
 
             long destDepth = Image.GetPixelFormatSize(sourceImage.PixelFormat);
             if (Settings.Default.ChangeColorDepth)
@@ -130,22 +149,46 @@ namespace ImageQuant
             {
                 throw new NotImplementedException();
             }
-            var destThumbnail = QImaging.GetThumbnail(destFilename);
             var destFileInfo = new FileInfo(destFilename);
-            return new ConverterResult(true, "正常終了", sourceFilename, destFilename, sourceImage.Width, sourceImage.Height, destImage.Width, destImage.Height, sourceFileInfo, destFileInfo, destFormat, 0, destDepth, destThumbnail);
+            return new ConverterResult(true, "正常終了", sourceFilename, destFilename, sourceImage.Width, sourceImage.Height, destImage.Width, destImage.Height, sourceFileInfo, destFileInfo, destFormat, 0, destDepth);
+        }
+
+        private void MakeDest(string sourceFilename, out QFileType destFormat, out string destFilename)
+        {
+            destFormat = Settings.Default.ChangeFormat ? QImaging.GetFileType(Settings.Default.Format) : QImaging.GetFileType(sourceFilename);
+            destFilename = GetDestFilename(sourceFilename);
+            if (!Directory.Exists(Path.GetDirectoryName(destFilename)))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(destFilename));
+            }
+        }
+
+        private bool OverwriteConfirm(string destFilename)
+        {
+            if (Settings.Default.OverwriteConfirm && File.Exists(destFilename))
+            {
+                if (MessageBox.Show("ファイルが存在しますが、上書きしますか？\r\n" + destFilename,
+                    "ImageQuant", MessageBoxButton.YesNo) == MessageBoxResult.No)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         private void SaveGif(Image destImage, string destFilename, long destDepth)
         {
-            var gifep = new EncoderParameters(1);
-            gifep.Param[0] = new EncoderParameter(Encoder.ColorDepth, destDepth);
+            using var gifep = new EncoderParameters(1);
+            using var ep0 = new EncoderParameter(Encoder.ColorDepth, destDepth);
+            gifep.Param[0] = ep0;
             destImage.Save(destFilename, GifImageCodecInfo, gifep);
         }
 
         private void SavePng(Image image, string destfilename, long depth)
         {
-            var pngEncoderParameters = new EncoderParameters(1);
-            pngEncoderParameters.Param[0] = new EncoderParameter(Encoder.ColorDepth, depth);
+            using var pngEncoderParameters = new EncoderParameters(1);
+            using var ep0 = new EncoderParameter(Encoder.ColorDepth, depth);
+            pngEncoderParameters.Param[0] = ep0;
             image.Save(destfilename, PngImageCodecInfo, pngEncoderParameters);
             if (Settings.Default.ChangePngQuality)
             {
@@ -154,28 +197,36 @@ namespace ImageQuant
                 string pngquantPath = Path.GetDirectoryName(imageQuantPath) + @"\pngquant.exe";
                 if (File.Exists(pngquantPath))
                 {
-                    var quantProcess = new Process();
-                    quantProcess.StartInfo.FileName = pngquantPath;
-                    quantProcess.StartInfo.Arguments =
-                        "-f --quality -" + Settings.Default.PngQuality.ToString() + " " + destfilename;
-                    quantProcess.StartInfo.CreateNoWindow = true;
-                    quantProcess.StartInfo.UseShellExecute = false;
-                    quantProcess.Start();
-                    quantProcess.WaitForExit();
-                    if (quantProcess.ExitCode != 0)
+                    using var proc = new Process();
+                    proc.StartInfo.FileName = pngquantPath;
+                    proc.StartInfo.Arguments = $"-f --quality -{Settings.Default.PngQuality} \"{destfilename}";
+                    proc.StartInfo.CreateNoWindow = true;
+                    proc.StartInfo.RedirectStandardOutput = true;
+                    proc.StartInfo.RedirectStandardError = true;
+                    proc.StartInfo.UseShellExecute = false;
+                    proc.Start();
+                    proc.WaitForExit();
+                    if (proc.ExitCode != 0)
                     {
-                        throw new Exception("pngquant returned " + quantProcess.ExitCode.ToString());
+                        throw new RuntimeException("pngquant.exeが0以外のコードを出力しました。", imageQuantPath, proc.ExitCode, proc.StandardOutput.ReadToEnd(), proc.StandardError.ReadToEnd());
                     }
                 }
+                else
+                {
+                    Debug.WriteLine("pngquantが見つかりません");
+                }
+
             }
         }
 
         private void SaveJpg(Image image, string destfilename, long depth)
         {
             var quality = Settings.Default.ChangeJpgQuality ? Settings.Default.JpgQuality : 90L;
-            var jpgEncoderParameters = new EncoderParameters(2);
-            jpgEncoderParameters.Param[0] = new EncoderParameter(Encoder.Quality, quality);
-            jpgEncoderParameters.Param[1] = new EncoderParameter(Encoder.ColorDepth, depth);
+            using var jpgEncoderParameters = new EncoderParameters(2);
+            using var ep0 = new EncoderParameter(Encoder.Quality, quality);
+            using var ep1 = new EncoderParameter(Encoder.ColorDepth, depth);
+            jpgEncoderParameters.Param[0] = ep0;
+            jpgEncoderParameters.Param[1] = ep1;
             image.Save(destfilename, JpgImageCodecInfo, jpgEncoderParameters);
         }
 
@@ -183,8 +234,8 @@ namespace ImageQuant
         {
             string dir, fname;
             dir = Settings.Default.SaveManualPath ? Settings.Default.SavePath : DestDir;
-            dir = dir == string.Empty ? Path.GetDirectoryName(target) : dir;
-            dir = dir == string.Empty ? TempDir : dir;
+            dir = dir == "" ? Path.GetDirectoryName(target) : dir;
+            dir = dir == "" ? TempDir : dir;
 
             dir = Settings.Default.CreateChildDirectory ?
                 Path.Combine(dir, Settings.Default.ChildDirectory) :
@@ -199,11 +250,17 @@ namespace ImageQuant
             return Path.Combine(dir, fname);
         }
 
-        public string SaveBmp(Bitmap bmp)
+        public string SaveBmpTemp(Bitmap bmp)
         {
-            string destfilename = GetDestFilename(@"\bitmap_" + (new DateTime()).ToString("yyyyMMdd-HHmmss") + QImaging.GetExtension(QFileType.Bmp));
-            bmp.Save(destfilename);
-            return destfilename;
+            string dir, fname;
+            dir = Settings.Default.SaveManualPath ? Settings.Default.SavePath : DestDir;
+            dir = dir == "" ? TempDir : dir;
+
+            fname = $"bitmap_{DateTime.Now:yyyyMMdd-HHmmss)}{QImaging.GetExtension(QFileType.Bmp)}";
+            if(!Directory.Exists(Path.GetDirectoryName(dir)))
+                Directory.CreateDirectory(Path.GetDirectoryName(dir));
+            bmp.Save(Path.Combine(dir,fname));
+            return Path.Combine(dir, fname);
         }
 
 

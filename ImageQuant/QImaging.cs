@@ -53,6 +53,7 @@ namespace ImageQuant
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 80)]
             public string szTypeName;
         };
+#pragma warning disable IDE0051 // 使用されていないプライベート メンバーを削除する
 
         // ファイル情報用
         private const int SHGFI_LARGEICON = 0x00000000;
@@ -74,9 +75,11 @@ namespace ImageQuant
         private const int LVSIL_NORMAL = 0;
         private const int LVSIL_SMALL = 1;
         private const int LVM_SETIMAGELIST = 0x1003;
+#pragma warning restore IDE0051 // 使用されていないプライベート メンバーを削除する
 
         public static int GetIconIndex(string name)
         {
+#pragma warning disable IDE0059 // 値の不必要な代入
             int iconIndex = 0;
             if (Directory.Exists(name))
             {
@@ -89,7 +92,6 @@ namespace ImageQuant
             }
             else
             {
-                String type = "";
                 SHFILEINFO shinfo = new SHFILEINFO();
                 IntPtr hSuccess = SHGetFileInfo(name, 0, out shinfo, (uint)Marshal.SizeOf(shinfo), SHGFI_ICON | SHGFI_LARGEICON | SHGFI_SMALLICON | SHGFI_SYSICONINDEX | SHGFI_TYPENAME);
                 if (hSuccess != IntPtr.Zero)
@@ -98,6 +100,8 @@ namespace ImageQuant
                 }
             }
             return iconIndex;
+#pragma warning restore IDE0059 // 値の不必要な代入
+
         }
 
         public static string FileSizeToString(long fileSize)
@@ -214,6 +218,7 @@ namespace ImageQuant
                 else if (ext == ".tif") return QFileType.Tiff;
                 else if (ext == ".tiff") return QFileType.Tiff;
                 else if (ext == ".ico") return QFileType.Icon;
+                else if (ext == ".pdf") return QFileType.Pdf;
                 else return QFileType.Unknown;
             }
         }
@@ -237,7 +242,22 @@ namespace ImageQuant
             using (var so = ShellObject.FromParsingName(name))
             {
                 //file.Thumbnail.FormatOption = ShellThumbnailFormatOption.IconOnly;
-                ret = so.Thumbnail.LargeBitmap;
+                try
+                {
+                    ret = so.Thumbnail.LargeBitmap;
+                }
+                catch (Exception)
+                {
+                    try
+                    {
+                        ret = so.Thumbnail.Bitmap;
+
+                    }
+                    catch (Exception)
+                    {
+                        ret = Resources.general_file;
+                    }
+                }
                 ret.MakeTransparent(Color.Black);
             }
             //}

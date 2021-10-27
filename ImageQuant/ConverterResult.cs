@@ -54,14 +54,14 @@ namespace ImageQuant
         [Category("2_出力")]
         public long Quality { get; }
 
-        public Image Thumbnail;
+        //public Image Thumbnail;
 
         public ConverterResult()
         {
 
         }
 
-        public ConverterResult(bool success, string errorMessage, string source, string dest, int sourcewidth, int sourceheight, int destwidth, int destheight, FileInfo sourceFileInfo, FileInfo destFileInfo, QFileType format, long quality, long depth, Image thumbnail)
+        public ConverterResult(bool success, string errorMessage, string source, string dest, int sourcewidth, int sourceheight, int destwidth, int destheight, FileInfo sourceFileInfo, FileInfo destFileInfo, QFileType format, long quality, long depth)
         {
             Success = success;
             ErrorMessage = errorMessage;
@@ -76,7 +76,7 @@ namespace ImageQuant
             QFileType = format;
             Quality = quality;
             ColorDepth = depth;
-            Thumbnail = thumbnail;
+            //Thumbnail = thumbnail;
         }
 
     }

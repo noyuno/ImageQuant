@@ -30,7 +30,7 @@
       <Value Profile="(Default)">min-</Value>
     </Setting>
     <Setting Name="Suffix" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="SuffixName" Type="System.String" Scope="User">
       <Value Profile="(Default)">-min</Value>
@@ -84,13 +84,19 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="FormSize" Type="System.Drawing.Size" Scope="User">
-      <Value Profile="(Default)">933, 618</Value>
+      <Value Profile="(Default)">800, 618</Value>
     </Setting>
     <Setting Name="ListViewWidth" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">305</Value>
+      <Value Profile="(Default)">400</Value>
     </Setting>
     <Setting Name="PictureBoxHeight" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">360</Value>
+      <Value Profile="(Default)">300</Value>
+    </Setting>
+    <Setting Name="GSDpi" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">96</Value>
+    </Setting>
+    <Setting Name="GSProfile" Type="System.String" Scope="User">
+      <Value Profile="(Default)">png16m</Value>
     </Setting>
   </Settings>
 </SettingsFile>

@@ -133,7 +133,7 @@ namespace ImageQuant.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool Suffix {
             get {
                 return ((bool)(this["Suffix"]));
@@ -348,7 +348,7 @@ namespace ImageQuant.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("933, 618")]
+        [global::System.Configuration.DefaultSettingValueAttribute("800, 618")]
         public global::System.Drawing.Size FormSize {
             get {
                 return ((global::System.Drawing.Size)(this["FormSize"]));
@@ -360,7 +360,7 @@ namespace ImageQuant.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("305")]
+        [global::System.Configuration.DefaultSettingValueAttribute("400")]
         public int ListViewWidth {
             get {
                 return ((int)(this["ListViewWidth"]));
@@ -372,13 +372,37 @@ namespace ImageQuant.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("360")]
+        [global::System.Configuration.DefaultSettingValueAttribute("300")]
         public int PictureBoxHeight {
             get {
                 return ((int)(this["PictureBoxHeight"]));
             }
             set {
                 this["PictureBoxHeight"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("96")]
+        public int GSDpi {
+            get {
+                return ((int)(this["GSDpi"]));
+            }
+            set {
+                this["GSDpi"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("png16m")]
+        public string GSProfile {
+            get {
+                return ((string)(this["GSProfile"]));
+            }
+            set {
+                this["GSProfile"] = value;
             }
         }
     }

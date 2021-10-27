@@ -41,14 +41,19 @@ namespace ImageQuant
         {
             ConverterResult = converterResult;
             FileInfo = ConverterResult.DestFileInfo;
-            if (ConverterResult.Success)
+
+            var sourceSize = QImaging.FileSizeToString(ConverterResult.SourceFileInfo.Length);
+            var destSize = QImaging.FileSizeToString(FileInfo.Length);
+            var ratio = (double)FileInfo.Length / ConverterResult.SourceFileInfo.Length * 100 - 100;
+            ToolTipText = $"{FileInfo.Name}\r\n{sourceSize}->{destSize}({ratio:F1}%)\r\n";
+            if (ratio < 100)
             {
                 base.ForeColor = Color.Blue;
             }
             else
             {
                 base.ForeColor = Color.Red;
-            }
+            }            
         }
 
         public ListViewFileItem(FileInfo fileInfo, Image thumbnail)
@@ -56,6 +61,7 @@ namespace ImageQuant
         {
             FileInfo = fileInfo;
             Thumbnail = thumbnail;
+            ToolTipText = $"{FileInfo.Name}\r\n{QImaging.FileSizeToString(FileInfo.Length)}\r\n";
         }
 
         //public ListViewFileItem(FileInfo fileInfo)

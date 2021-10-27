@@ -13,9 +13,10 @@ using System.Windows.Forms;
 
 namespace ImageQuant
 {
+#pragma warning disable IDE1006 // 命名スタイル
     public partial class SettingForm : Form
     {
-        private MainForm mainForm;
+        private readonly MainForm mainForm;
         public readonly int[] ThumbnailSizeList = new int[] { 25, 50, 75, 100, 150, 200 };
         public const int DefaultThumbnailSize = 100;
 
@@ -43,10 +44,9 @@ namespace ImageQuant
             thumbnailSizeCheckBox.Checked = thumbnailSizeComboBox.Enabled = Settings.Default.ManualThumbnailSize;
             thumbnailSizeComboBox.DataSource = ThumbnailSizeList;
             thumbnailSizeComboBox.SelectedItem = Settings.Default.ThumbnailSize;
-            previewCheckBox.Checked = Settings.Default.Preview;
             overwriteDialogCheckBox.Checked = Settings.Default.OverwriteConfirm;
             //saveRecentlyDirectoryCheckBox.Checked = Settings.Default.SaveRecentlyDirectory;
-            saveRecentlyDirectoryCheckBox.Visible = false;
+            //saveRecentlyDirectoryCheckBox.Visible = false;
 
             currentDirectoryRadioButton.Checked = !Settings.Default.SaveManualPath;
             manualDirectoryRadioButton.Checked = savePathTextBox.Enabled = savePathDialogButton.Enabled =
@@ -86,6 +86,8 @@ namespace ImageQuant
             zipDialogCheckBox.Checked = Settings.Default.ZipDialog;
             //
             versionLabel.Text = $"{Application.ProductName}  {Application.ProductVersion}";
+            //
+            propertyGrid.SelectedObject = Settings.Default;
 
             loading = false;
         }
@@ -148,26 +150,7 @@ namespace ImageQuant
                 Settings.Default.ThumbnailSize =
                     mainForm.ThumbnailSize =
                     int.Parse(thumbnailSizeComboBox.SelectedItem.ToString());
-            }
-        }
-
-        private void previewCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (!loading)
-            {
-                Settings.Default.Preview = previewCheckBox.Checked;
-                if(Settings.Default.Preview)
-                {
-                    //mainForm.tableLayoutPanel.ColumnStyles[1] = new ColumnStyle(SizeType.Percent, 50f);
-                    mainForm.splitContainer.SplitterDistance = mainForm.Width / 2;
-
-                }
-                else
-                {
-                    //mainForm.tableLayoutPanel.ColumnStyles[1] = new ColumnStyle(SizeType.Percent, 0f);
-                    mainForm.splitContainer.SplitterDistance = mainForm.Width;
-
-                }
+                mainForm.UpdateListView();
             }
         }
 
@@ -222,8 +205,10 @@ namespace ImageQuant
 
         private void savePathDialogButton_Click(object sender, EventArgs e)
         {
-            var dialog = new CommonOpenFileDialog("フォルダ選択");
-            dialog.IsFolderPicker = true;
+            var dialog = new CommonOpenFileDialog("フォルダ選択")
+            {
+                IsFolderPicker = true
+            };
             if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
                 savePathTextBox.Text = dialog.FileName;
@@ -399,4 +384,5 @@ namespace ImageQuant
             Process.Start("https://github.com/noyuno/ImageQuant");
         }
     }
+#pragma warning restore IDE1006 // 命名スタイル
 }

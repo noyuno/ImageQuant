@@ -50,12 +50,14 @@ namespace ImageQuant
             if (Settings.Default.ZipDialog)
             {
 
-                var sfd = new SaveFileDialog();
-                sfd.FileName = initialname;
-                sfd.InitialDirectory = initialdir;
-                sfd.Filter = "Zip アーカイブ(*.zip)|*.zip|すべてのファイル(*.*)|*.*";
-                sfd.Title = "Zipアーカイブの保存場所を選択してください";
-                sfd.OverwritePrompt = Settings.Default.OverwriteConfirm;
+                var sfd = new SaveFileDialog
+                {
+                    FileName = initialname,
+                    InitialDirectory = initialdir,
+                    Filter = "Zip アーカイブ(*.zip)|*.zip|すべてのファイル(*.*)|*.*",
+                    Title = "Zipアーカイブの保存場所を選択してください",
+                    OverwritePrompt = Settings.Default.OverwriteConfirm
+                };
                 if (sfd.ShowDialog() != DialogResult.OK)
                 {
                     return "";
@@ -104,5 +106,19 @@ namespace ImageQuant
                 FileSystem.DeleteFile(v, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
             }
         }
+
+        //public static object GetFileContext(string path, IntPtr hwnd)
+        //{
+            //if (!(File.Exists(path) || Directory.Exists(path)))
+            //{
+            //    throw new FileNotFoundException(path);
+            //}
+            //var instanceType = Type.GetTypeFromProgID("Shell.Application");
+            //dynamic shell = Activator.CreateInstance(instanceType);
+            //var num = Directory.GetFiles(Path.GetDirectoryName(path)).Length;
+            
+            //var ns = shell.Namespace(Path.GetDirectoryName(path)).Verb.GetUIObjectOf(shell, hwnd, num, )
+            //return verbs;
+        //}
     }
 }
