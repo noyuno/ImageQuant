@@ -98,5 +98,17 @@
     <Setting Name="GSProfile" Type="System.String" Scope="User">
       <Value Profile="(Default)">png16m</Value>
     </Setting>
+    <Setting Name="RotateFromExif" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="SaveExif" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ParallelProcess" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">15</Value>
+    </Setting>
+    <Setting Name="ThumbnailFallbackInterval" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">5</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

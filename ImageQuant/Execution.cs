@@ -37,11 +37,7 @@ namespace ImageQuant
 
         public static string Zip(string[] paths)
         {
-            if(paths.Length == 0)
-            {
-                MessageBox.Show("圧縮したいファイルを1つ以上指定してください。");
-                return "";
-            }
+
             string zipfilename;
             var initialdir = Path.GetDirectoryName(paths[0]);
             var initialname = Path.GetFileName(initialdir);

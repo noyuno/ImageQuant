@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -37,6 +38,15 @@ namespace ImageQuant
             ExitCode = exitcode;
             StandardOutput = stdout;
             StandardError = stderr;
+
+            Debug.WriteLine("----------------RuntimeException----------------");
+            Debug.WriteLine(message, "message");
+            Debug.WriteLine(Command, "command");
+            Debug.WriteLine(ExitCode, "exitcode");
+            Debug.WriteLine(StandardOutput, "stdout");
+            Debug.WriteLine(StandardError, "stderr");
+            Debug.WriteLine("------------------------------------------------");
+
         }
 
 

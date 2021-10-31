@@ -113,7 +113,8 @@ namespace ImageQuant
 
         private void helpButton_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("まだありません");
+            new AskForm().Show(this, "まだありません", "", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
         }
 
         private void SettingForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -382,6 +383,12 @@ namespace ImageQuant
         private void githubLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             Process.Start("https://github.com/noyuno/ImageQuant");
+        }
+
+        private void openExcelTemplateButton_Click_1(object sender, EventArgs e)
+        {
+            new AskForm().Show(this, "まだありません", "", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
         }
     }
 #pragma warning restore IDE1006 // 命名スタイル

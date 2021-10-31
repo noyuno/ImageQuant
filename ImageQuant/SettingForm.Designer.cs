@@ -64,33 +64,33 @@ namespace ImageQuant
             this.overwriteDialogCheckBox = new System.Windows.Forms.CheckBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.label5 = new System.Windows.Forms.Label();
             this.colorDepthComboBox = new System.Windows.Forms.ComboBox();
             this.colorDepthCheckBox = new System.Windows.Forms.CheckBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.zipDialogCheckBox = new System.Windows.Forms.CheckBox();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.openExcelTemplateButton = new System.Windows.Forms.Button();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.tabPage8 = new System.Windows.Forms.TabPage();
+            this.propertyGrid = new System.Windows.Forms.PropertyGrid();
             this.tabPage7 = new System.Windows.Forms.TabPage();
             this.label4 = new System.Windows.Forms.Label();
             this.versionLabel = new System.Windows.Forms.Label();
             this.githubLinkLabel = new System.Windows.Forms.LinkLabel();
-            this.label5 = new System.Windows.Forms.Label();
-            this.tabPage8 = new System.Windows.Forms.TabPage();
-            this.propertyGrid = new System.Windows.Forms.PropertyGrid();
-            this.openExcelTemplateButton = new System.Windows.Forms.Button();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.zipDialogCheckBox = new System.Windows.Forms.CheckBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.groupBox4.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.tabPage4.SuspendLayout();
-            this.groupBox7.SuspendLayout();
-            this.tabPage7.SuspendLayout();
-            this.tabPage8.SuspendLayout();
-            this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.groupBox1.SuspendLayout();
+            this.groupBox7.SuspendLayout();
+            this.tabPage8.SuspendLayout();
+            this.tabPage7.SuspendLayout();
             this.SuspendLayout();
             // 
             // qualityPngComboBox
@@ -152,7 +152,7 @@ namespace ImageQuant
             this.qualityPngCheckBox.Name = "qualityPngCheckBox";
             this.qualityPngCheckBox.Size = new System.Drawing.Size(276, 42);
             this.qualityPngCheckBox.TabIndex = 6;
-            this.qualityPngCheckBox.Text = "品質（最大値）(PNG)(未指定=90):\r\n※pngquantを使用します。";
+            this.qualityPngCheckBox.Text = "品質（最大値）(PNG)(未指定=80):\r\n※pngquantを使用します。";
             this.qualityPngCheckBox.UseVisualStyleBackColor = true;
             this.qualityPngCheckBox.CheckedChanged += new System.EventHandler(this.qualityPngCheckBox_CheckedChanged);
             // 
@@ -164,7 +164,7 @@ namespace ImageQuant
             this.qualityJpgCheckBox.Name = "qualityJpgCheckBox";
             this.qualityJpgCheckBox.Size = new System.Drawing.Size(197, 23);
             this.qualityJpgCheckBox.TabIndex = 4;
-            this.qualityJpgCheckBox.Text = "品質(JPG)(未指定=90):";
+            this.qualityJpgCheckBox.Text = "品質(JPG)(未指定=80):";
             this.qualityJpgCheckBox.UseVisualStyleBackColor = true;
             this.qualityJpgCheckBox.CheckedChanged += new System.EventHandler(this.qualityJpgCheckBox_CheckedChanged);
             // 
@@ -522,6 +522,15 @@ namespace ImageQuant
             this.tabPage3.Text = "出力フォーマット";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
+            // label5
+            // 
+            this.label5.Location = new System.Drawing.Point(295, 224);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(347, 94);
+            this.label5.TabIndex = 8;
+            this.label5.Text = "※ここでの設定は入力ファイルがPDFのときは無視されます。\r\n（Ghostscript使用、GSDpi、GSProfile参照）\r\n※pngquant使用時は色深" +
+    "度8bit固定";
+            // 
             // colorDepthComboBox
             // 
             this.colorDepthComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -560,6 +569,61 @@ namespace ImageQuant
             this.tabPage4.Text = "開き方";
             this.tabPage4.UseVisualStyleBackColor = true;
             // 
+            // groupBox2
+            // 
+            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox2.Controls.Add(this.zipDialogCheckBox);
+            this.groupBox2.Location = new System.Drawing.Point(12, 216);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(631, 84);
+            this.groupBox2.TabIndex = 6;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Zip";
+            // 
+            // zipDialogCheckBox
+            // 
+            this.zipDialogCheckBox.AutoSize = true;
+            this.zipDialogCheckBox.Location = new System.Drawing.Point(7, 26);
+            this.zipDialogCheckBox.Name = "zipDialogCheckBox";
+            this.zipDialogCheckBox.Size = new System.Drawing.Size(496, 42);
+            this.zipDialogCheckBox.TabIndex = 5;
+            this.zipDialogCheckBox.Text = "「名前を付けて保存」ダイアログを使用して保存先を指定する\r\n※オフの場合は画像ファイルと同じフォルダに名前を自動的に決めて保存します。";
+            this.zipDialogCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.label3);
+            this.groupBox1.Controls.Add(this.openExcelTemplateButton);
+            this.groupBox1.Location = new System.Drawing.Point(6, 127);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(637, 72);
+            this.groupBox1.TabIndex = 4;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Excel";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(9, 33);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(338, 19);
+            this.label3.TabIndex = 5;
+            this.label3.Text = "右のボタンを押してテンプレートを編集することができます。";
+            // 
+            // openExcelTemplateButton
+            // 
+            this.openExcelTemplateButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.openExcelTemplateButton.Location = new System.Drawing.Point(474, 26);
+            this.openExcelTemplateButton.Name = "openExcelTemplateButton";
+            this.openExcelTemplateButton.Size = new System.Drawing.Size(157, 33);
+            this.openExcelTemplateButton.TabIndex = 4;
+            this.openExcelTemplateButton.Text = "テンプレートを開く";
+            this.openExcelTemplateButton.UseVisualStyleBackColor = true;
+            this.openExcelTemplateButton.Click += new System.EventHandler(this.openExcelTemplateButton_Click_1);
+            // 
             // groupBox7
             // 
             this.groupBox7.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -573,6 +637,26 @@ namespace ImageQuant
             this.groupBox7.TabIndex = 3;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "メーラー";
+            // 
+            // tabPage8
+            // 
+            this.tabPage8.Controls.Add(this.propertyGrid);
+            this.tabPage8.Location = new System.Drawing.Point(4, 28);
+            this.tabPage8.Name = "tabPage8";
+            this.tabPage8.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage8.Size = new System.Drawing.Size(649, 321);
+            this.tabPage8.TabIndex = 7;
+            this.tabPage8.Text = "詳細設定";
+            this.tabPage8.UseVisualStyleBackColor = true;
+            // 
+            // propertyGrid
+            // 
+            this.propertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.propertyGrid.HelpVisible = false;
+            this.propertyGrid.Location = new System.Drawing.Point(3, 3);
+            this.propertyGrid.Name = "propertyGrid";
+            this.propertyGrid.Size = new System.Drawing.Size(643, 315);
+            this.propertyGrid.TabIndex = 0;
             // 
             // tabPage7
             // 
@@ -622,88 +706,6 @@ namespace ImageQuant
             this.githubLinkLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.githubLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.githubLinkLabel_LinkClicked);
             // 
-            // label5
-            // 
-            this.label5.Location = new System.Drawing.Point(295, 224);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(347, 94);
-            this.label5.TabIndex = 8;
-            this.label5.Text = "※ここでの設定は入力ファイルがPDFのときは無視されます。\r\n（Ghostscript使用、GSDpi、GSProfile参照）";
-            // 
-            // tabPage8
-            // 
-            this.tabPage8.Controls.Add(this.propertyGrid);
-            this.tabPage8.Location = new System.Drawing.Point(4, 28);
-            this.tabPage8.Name = "tabPage8";
-            this.tabPage8.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage8.Size = new System.Drawing.Size(649, 321);
-            this.tabPage8.TabIndex = 7;
-            this.tabPage8.Text = "詳細設定";
-            this.tabPage8.UseVisualStyleBackColor = true;
-            // 
-            // propertyGrid
-            // 
-            this.propertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.propertyGrid.HelpVisible = false;
-            this.propertyGrid.Location = new System.Drawing.Point(3, 3);
-            this.propertyGrid.Name = "propertyGrid";
-            this.propertyGrid.Size = new System.Drawing.Size(643, 315);
-            this.propertyGrid.TabIndex = 0;
-            // 
-            // openExcelTemplateButton
-            // 
-            this.openExcelTemplateButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.openExcelTemplateButton.Location = new System.Drawing.Point(474, 26);
-            this.openExcelTemplateButton.Name = "openExcelTemplateButton";
-            this.openExcelTemplateButton.Size = new System.Drawing.Size(157, 33);
-            this.openExcelTemplateButton.TabIndex = 4;
-            this.openExcelTemplateButton.Text = "テンプレートを開く";
-            this.openExcelTemplateButton.UseVisualStyleBackColor = true;
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Controls.Add(this.openExcelTemplateButton);
-            this.groupBox1.Location = new System.Drawing.Point(6, 127);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(637, 72);
-            this.groupBox1.TabIndex = 4;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Excel";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(9, 33);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(338, 19);
-            this.label3.TabIndex = 5;
-            this.label3.Text = "右のボタンを押してテンプレートを編集することができます。";
-            // 
-            // zipDialogCheckBox
-            // 
-            this.zipDialogCheckBox.AutoSize = true;
-            this.zipDialogCheckBox.Location = new System.Drawing.Point(7, 26);
-            this.zipDialogCheckBox.Name = "zipDialogCheckBox";
-            this.zipDialogCheckBox.Size = new System.Drawing.Size(496, 42);
-            this.zipDialogCheckBox.TabIndex = 5;
-            this.zipDialogCheckBox.Text = "「名前を付けて保存」ダイアログを使用して保存先を指定する\r\n※オフの場合は画像ファイルと同じフォルダに名前を自動的に決めて保存します。";
-            this.zipDialogCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // groupBox2
-            // 
-            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox2.Controls.Add(this.zipDialogCheckBox);
-            this.groupBox2.Location = new System.Drawing.Point(12, 216);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(631, 84);
-            this.groupBox2.TabIndex = 6;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Zip";
-            // 
             // SettingForm
             // 
             this.AcceptButton = this.closeButton;
@@ -735,14 +737,14 @@ namespace ImageQuant
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
             this.tabPage4.ResumeLayout(false);
-            this.groupBox7.ResumeLayout(false);
-            this.groupBox7.PerformLayout();
-            this.tabPage7.ResumeLayout(false);
-            this.tabPage8.ResumeLayout(false);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
+            this.groupBox7.ResumeLayout(false);
+            this.groupBox7.PerformLayout();
+            this.tabPage8.ResumeLayout(false);
+            this.tabPage7.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

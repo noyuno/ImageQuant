@@ -1,16 +1,14 @@
-﻿using ImageQuant.Properties;
+﻿//using ImageQuant.Properties;
+using Microsoft.WindowsAPICodePack.Shell;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using Microsoft.WindowsAPICodePack;
-using Microsoft.WindowsAPICodePack.Shell;
+using System.Windows.Media.Imaging;
 
 namespace ImageQuant
 {
@@ -150,77 +148,51 @@ namespace ImageQuant
             return null;
         }
 
-        //public static string GetExtension(ImageFormat format)
-        //{
-        //    if (format == ImageFormat.Jpeg) return ".jpg";
-        //    else if (format == ImageFormat.Gif) return ".gif";
-        //    else if (format == ImageFormat.Png) return ".png";
-        //    else if (format == ImageFormat.Bmp) return ".bmp";
-        //    else if (format == ImageFormat.Tiff) return ".tif";
-        //    else throw new NotImplementedException(format.ToString());
-        //}
-
-        //public static ImageFormat GetImageFormat(string name)
-        //{
-        //    if (name == "JPEG") return ImageFormat.Jpeg;
-        //    else if (name == "JPG") return ImageFormat.Jpeg;
-        //    else if (name == "GIF") return ImageFormat.Gif;
-        //    else if (name == "PNG") return ImageFormat.Png;
-        //    else if (name == "BMP") return ImageFormat.Bmp;
-        //    else if (name == "TIFF") return ImageFormat.Tiff;
-        //    else
-        //    {
-        //        var ext = Path.GetExtension(name).ToLower();
-        //        if (ext == ".jpg") return ImageFormat.Jpeg;
-        //        else if (ext == ".jpeg") return ImageFormat.Jpeg;
-        //        else if (ext == ".jfif") return ImageFormat.Jpeg;
-        //        else if (ext == ".gif") return ImageFormat.Gif;
-        //        else if (ext == ".png") return ImageFormat.Png;
-        //        else if (ext == ".bmp") return ImageFormat.Bmp;
-        //        else if (ext == ".tif") return ImageFormat.Tiff;
-        //        else if (ext == ".tiff") return ImageFormat.Tiff;
-        //        else return null;
-        //    }
-        //}
-
         public static string GetExtension(QFileType format)
         {
-            if (format == QFileType.Jpeg) return ".jpg";
-            else if (format == QFileType.Gif) return ".gif";
-            else if (format == QFileType.Png) return ".png";
-            else if (format == QFileType.Bmp) return ".bmp";
-            else if (format == QFileType.Tiff) return ".tif";
-            else if (format == QFileType.Icon) return ".ico";
-            else if (format == QFileType.Pdf) return ".pdf";
-            else return "";
+            return format switch
+            {
+                QFileType.Jpeg => ".jpg",
+                QFileType.Gif => ".gif",
+                QFileType.Png => ".png",
+                QFileType.Bmp => ".bmp",
+                QFileType.Tiff => ".tif",
+                QFileType.Icon => ".ico",
+                QFileType.Pdf => ".pdf",
+                QFileType.Unknown => "",
+                _ => ""
+            };
         }
 
         public static QFileType GetFileType(string name)
         {
-            if (name == "JPEG") return QFileType.Jpeg;
-            else if (name == "JPG") return QFileType.Jpeg;
-            else if (name == "GIF") return QFileType.Gif;
-            else if (name == "PNG") return QFileType.Png;
-            else if (name == "BMP") return QFileType.Bmp;
-            else if (name == "TIFF") return QFileType.Tiff;
-            else if (name == "PDF") return QFileType.Pdf;
-            else if (name == "ICON") return QFileType.Icon;
-            else if (name == "ICO") return QFileType.Icon;
-            else
+            return name switch
             {
-                var ext = Path.GetExtension(name).ToLower();
-                if (ext == ".jpg") return QFileType.Jpeg;
-                else if (ext == ".jpeg") return QFileType.Jpeg;
-                else if (ext == ".jfif") return QFileType.Jpeg;
-                else if (ext == ".gif") return QFileType.Gif;
-                else if (ext == ".png") return QFileType.Png;
-                else if (ext == ".bmp") return QFileType.Bmp;
-                else if (ext == ".tif") return QFileType.Tiff;
-                else if (ext == ".tiff") return QFileType.Tiff;
-                else if (ext == ".ico") return QFileType.Icon;
-                else if (ext == ".pdf") return QFileType.Pdf;
-                else return QFileType.Unknown;
-            }
+                "JPEG" => QFileType.Jpeg,
+                "JPG" => QFileType.Jpeg,
+                "GIF" => QFileType.Gif,
+                "PNG" => QFileType.Png,
+                "BMP" => QFileType.Bmp,
+                "TIFF" => QFileType.Tiff,
+                "PDF" => QFileType.Pdf,
+                "ICON" => QFileType.Icon,
+                "ICO" => QFileType.Icon,
+                _ => Path.GetExtension(name).ToLower() switch
+                {
+                    ".jpg" => QFileType.Jpeg,
+                    ".jpeg" => QFileType.Jpeg,
+                    ".jfif" => QFileType.Jpeg,
+                    ".gif" => QFileType.Gif,
+                    ".png" => QFileType.Png,
+                    ".bmp" => QFileType.Bmp,
+                    ".tif" => QFileType.Tiff,
+                    ".tiff" => QFileType.Tiff,
+                    ".ico" => QFileType.Icon,
+                    ".pdf" => QFileType.Pdf,
+                    _ => QFileType.Unknown
+                }
+            };
+            
         }
 
         public static QFileType GetFileType(ImageFormat format)
@@ -234,56 +206,237 @@ namespace ImageQuant
             else return QFileType.Unknown;
         }
 
-        public static Bitmap GetThumbnail(string name)
+        public static (Bitmap,int) GetThumbnail(string name, int width, int height, RotateFlipType rotation, Bitmap fail)
         {
-            Bitmap ret;
-            //if (GetImageFormat(name) == null)
-            //{
+            const int thumbsize = 100;
+            var ret = new Bitmap(thumbsize, thumbsize);
+            using var g = Graphics.FromImage(ret);
+            g.FillRectangle(new SolidBrush(Color.Black), 0, 0, thumbsize, thumbsize);
+            var destpoints = GetThumbnailPoints(ret, width, height, rotation);
+
+            Bitmap thumb;
+            int fallback;
+            (thumb, fallback) = GetThumbnail(name, fail);
+            g.DrawImage(thumb, destpoints) ;
+            g.Dispose();
+            ret.MakeTransparent(Color.Black);
+            return (ret, fallback);
+        }
+
+        public static (Bitmap,int) GetThumbnail(string name, Bitmap fail)
+        {
+            Bitmap thumb;
+            var fallback = 0;
             using (var so = ShellObject.FromParsingName(name))
             {
-                //file.Thumbnail.FormatOption = ShellThumbnailFormatOption.IconOnly;
                 try
                 {
-                    ret = so.Thumbnail.LargeBitmap;
+                    so.Thumbnail.FormatOption = ShellThumbnailFormatOption.ThumbnailOnly;
+                    thumb = so.Thumbnail.LargeBitmap;
                 }
                 catch (Exception)
                 {
                     try
                     {
-                        ret = so.Thumbnail.Bitmap;
-
+                        so.Thumbnail.FormatOption = ShellThumbnailFormatOption.Default;
+                        thumb = so.Thumbnail.LargeBitmap;
+                        fallback = 1;
                     }
                     catch (Exception)
                     {
-                        ret = Resources.general_file;
+                        try
+                        {
+                            thumb = so.Thumbnail.Bitmap;
+                            fallback = 2;
+                        }
+                        catch (Exception)
+                        {
+                            thumb = fail;
+                            fallback = 3;
+                        }
                     }
                 }
-                ret.MakeTransparent(Color.Black);
             }
-            //}
-            //else
-            //{
-            //    var original = Bitmap.FromFile(name);
-            //    ret = GetThumbnail(original);
-            //    original.Dispose();
-            //}
-            return ret;
+            thumb.MakeTransparent(Color.Black);
+            return (thumb, fallback);
         }
 
-        //public static Image GetThumbnail(Image image)
+        private static Point[] GetThumbnailPoints(Image ret, int width, int height, RotateFlipType rotation)
+        {
+            int thumbsize = ret.Width;
+            int large, small;
+            if (width > height)
+            {
+                // (0,a) (b,a)
+                // (0,c) (b,c)
+                large = width;
+                small = height;
+            }
+            else
+            {
+                // (a,0) (a,b)
+                // (c,0) (c,b)
+                large = height;
+                small = width;
+            }
+            var scale = (double)thumbsize / large;
+            var a = (int)((large - small) / 2 * scale);
+            var b = (int)(large * scale);
+            var c = (int)((small + (large - small) / 2) * scale);
+            //var d = (int)((small - (large - small) / 2) * scale);
+            var destpoints = new Point[3];
+            // 0 1
+            // 2 -
+            if (rotation == RotateFlipType.Rotate90FlipNone || rotation == RotateFlipType.Rotate270FlipNone)
+            {
+                if (height > width)
+                {
+                    destpoints[0] = new Point(0, a);
+                    destpoints[1] = new Point(b, a);
+                    destpoints[2] = new Point(0, c);
+                    //destpoints[3] = new Point(b, c);
+                }
+                else
+                {
+                    destpoints[0] = new Point(a, 0);
+                    destpoints[2] = new Point(a, b);
+                    destpoints[1] = new Point(c, 0);
+                    //destpoints[3] = new Point(c, b);
+                }
+            }
+            else
+            {
+                if (width > height)
+                {
+                    destpoints[0] = new Point(0, a);
+                    destpoints[1] = new Point(b, a);
+                    destpoints[2] = new Point(0, c);
+                    //destpoints[3] = new Point(b, c);
+                }
+                else
+                {
+                    destpoints[0] = new Point(a, 0);
+                    destpoints[2] = new Point(a, b);
+                    destpoints[1] = new Point(c, 0);
+                    //destpoints[3] = new Point(c, b);
+                }
+            }
+
+            return destpoints;
+        }
+
+        //public object[] SlideArray(object[] obj)
         //{
-        //    var size = Settings.Default.ThumbnailSize;
-        //    var scale = Math.Min((float)size / image.Width, (float)size / image.Height);
-        //    var fw = image.Width * scale;
-        //    var fh = image.Height * scale;
-        //    Image ret = new Bitmap(size, size);
-        //    Graphics g = Graphics.FromImage(ret);
-        //    g.FillRectangle(new SolidBrush(Color.White), 0, 0, size, size);
-        //    g.DrawImage(image, (size - fw) / 2, (size - fh) / 2, fw, fh);
-        //    g.Dispose();
-        //    return ret;
+        //    object[] ret = new object[obj.Length];
+        //    object tmp;
+        //    for (int i = 0; i < obj.Length; i++)
+        //    {
+
+        //    }
         //}
-    
+
+        public static bool SaveJpg(Image image, string destfilename, long depth, int quality)
+        {
+            using var jpgEncoderParameters = new EncoderParameters(2);
+            using var ep0 = new EncoderParameter(Encoder.Quality, quality);
+            using var ep1 = new EncoderParameter(Encoder.ColorDepth, depth);
+            jpgEncoderParameters.Param[0] = ep0;
+            jpgEncoderParameters.Param[1] = ep1;
+            image.Save(destfilename, GetEncoderInfo("image/jpeg"), jpgEncoderParameters);
+            return true;
+        }
+
+        public static bool SavePng(Image image, string destfilename, long depth, string tempdir, bool usepngquant, int quality, out bool pngquant)
+        {
+            using var pngEncoderParameters = new EncoderParameters(1);
+            using var ep0 = new EncoderParameter(Encoder.ColorDepth, depth);
+            pngEncoderParameters.Param[0] = ep0;
+            if (usepngquant)
+            {
+                var t = Path.Combine(tempdir, $"pngquant-temp-{Guid.NewGuid().ToString("N").Substring(0, 12)}.png");
+                image.Save(t, GetEncoderInfo("image/png"), pngEncoderParameters);
+                PngQuant(t, quality);
+                if (File.Exists(destfilename))
+                {
+                    File.Delete(destfilename);
+                }
+                File.Move(t, destfilename);
+                pngquant = true;
+            }
+            else
+            {
+                image.Save(destfilename, GetEncoderInfo("image/png"), pngEncoderParameters);
+                pngquant = false;
+            }
+            return true;
+        }
+
+        // bug : 日本語を含むファイル名は変換できない
+        private static void PngQuant(string destfilename, int quality)
+        {
+            Assembly myAssembly = Assembly.GetEntryAssembly();
+            string imageQuantPath = myAssembly.Location;
+            string pngquantPath = Path.GetDirectoryName(imageQuantPath) + @"\pngquant.exe";
+            if (File.Exists(pngquantPath))
+            {
+                using var proc = new Process();
+                proc.StartInfo.FileName = pngquantPath;
+                proc.StartInfo.Arguments = $"-f --quality -{quality} -o \"{destfilename}\" \"{destfilename}\"";
+                proc.StartInfo.CreateNoWindow = true;
+                proc.StartInfo.RedirectStandardOutput = true;
+                proc.StartInfo.RedirectStandardError = true;
+                proc.StartInfo.UseShellExecute = false;
+                proc.Start();
+                proc.WaitForExit();
+                if (proc.ExitCode != 0)
+                {
+                    throw new RuntimeException("pngquant.exeが0以外のコードを出力しました。", imageQuantPath + " " + proc.StartInfo.Arguments, proc.ExitCode, proc.StandardOutput.ReadToEnd(), proc.StandardError.ReadToEnd());
+                }
+            }
+            else
+            {
+                throw new RuntimeException("pngquant.exeが見つかりません。", pngquantPath, 0, "", "");
+            }
+        }
+
+        public static bool SaveGif(Image image, string destFilename, long destDepth)
+        {
+            using var gifep = new EncoderParameters(1);
+            using var ep0 = new EncoderParameter(Encoder.ColorDepth, destDepth);
+            gifep.Param[0] = ep0;
+            image.Save(destFilename, GetEncoderInfo("image/gif"), gifep);
+            return true;
+        }
+
+
+        public static void Ghostscript(string sourceFilename, string destFilename, string gsprofile, int gsdpi)
+        {
+            Assembly myAssembly = Assembly.GetEntryAssembly();
+            string imageQuantPath = myAssembly.Location;
+            string gspath = Path.GetDirectoryName(imageQuantPath) + @"\gswin64c.exe";
+            if (File.Exists(gspath))
+            {
+                using var proc = new Process();
+                proc.StartInfo.FileName = gspath;
+                proc.StartInfo.Arguments = $"-sDEVICE={gsprofile} -r{gsdpi} -dGraphicsAlphaBits=4 -o \"{destFilename}\" \"{sourceFilename}";
+                proc.StartInfo.CreateNoWindow = true;
+                proc.StartInfo.RedirectStandardOutput = true;
+                proc.StartInfo.RedirectStandardError = true;
+                proc.StartInfo.UseShellExecute = false;
+                proc.Start();
+                proc.WaitForExit();
+                //Debug.WriteLine(proc.StandardOutput.ReadToEnd(),"stdout");
+                //Debug.WriteLine(proc.StandardOutput.ReadToEnd(),"stderr");
+                if (proc.ExitCode != 0)
+                {
+                    throw new RuntimeException("gswin64c.exe exited with code non-zero", gspath + " " + proc.StartInfo.Arguments, proc.ExitCode, proc.StandardOutput.ReadToEnd(), proc.StandardError.ReadToEnd());
+                }
+            }
+            else
+            {
+                throw new RuntimeException("gswin64c.exeが見つかりません。", gspath, -1, "", "");
+            }
+        }
 
         public static Image Resize(Image image, int maximumSize)
         {
@@ -297,5 +450,224 @@ namespace ImageQuant
             g.Dispose();
             return ret;
         }
+
+        //public static void RotateFromExif(Image image)
+        //{
+        //    image.RotateFlip(ReadOrientation(image));
+        //}
+
+        public static RotateFlipType RotateImage(Image image)
+        {
+            var rotate = QImaging.ReadOrientation(image);
+            image.RotateFlip(rotate);
+            return rotate;
+        }
+
+        public static RotateFlipType ReadOrientation(Image image, RotateFlipType add = RotateFlipType.RotateNoneFlipNone)
+        {
+            var rotint = (int)add; // 0
+            foreach (var item in image.PropertyItems)
+            {
+                if (item.Id != 0x0112)
+                {
+                    continue;
+                }
+                rotint += (int)(item.Value[0] switch
+                {
+                    1 => RotateFlipType.RotateNoneFlipNone,
+                    2 => RotateFlipType.RotateNoneFlipY,
+                    3 => RotateFlipType.Rotate180FlipNone, // 2
+                    4 => RotateFlipType.RotateNoneFlipX,
+                    5 => RotateFlipType.Rotate270FlipY,
+                    6 => RotateFlipType.Rotate90FlipNone, // 1
+                    7 => RotateFlipType.Rotate90FlipY,
+                    8 => RotateFlipType.Rotate270FlipNone, // 3
+                    _ => RotateFlipType.RotateNoneFlipNone
+                });
+                if (rotint >= 4)
+                {
+                    rotint -= 4;
+                }
+            }
+            return (RotateFlipType)rotint;
+        }
+
+        public static uint GetExifOrientation(RotateFlipType type)
+        {
+            return (int)type switch
+            {
+                0 => 1,
+                1 => 6,
+                2 => 3,
+                3 => 8,
+                4 => 4,
+                5 => 5,
+                6 => 2,
+                7 => 7,
+                _ => 1
+            };
+        }
+
+        private static readonly List<string> queryPadding = new List<string>()
+        {
+            "/app1/ifd/PaddingSchema:Padding", // Query path for IFD metadata
+            "/app1/ifd/exif/PaddingSchema:Padding", // Query path for EXIF metadata
+            "/xmp/PaddingSchema:Padding", // Query path for XMP metadata
+        };
+
+        public static bool CopyMetadata(string sourceFilename, string destFilename, bool ignoreOrientation)
+        {
+            using var source = new MemoryStream(File.ReadAllBytes(sourceFilename));
+            using var dest = new MemoryStream(File.ReadAllBytes(destFilename));
+            using var destFile = File.Open(destFilename, FileMode.Open);
+            var ret = EditDateTaken(source, dest, DateTime.Now, ignoreOrientation);
+            if (ret == null)
+                return false;
+            destFile.Write(ret, 0, ret.Length);
+            destFile.Close();
+            return true;
+        }
+
+        public static Byte[] EditDateTaken(Stream source, Stream dest, DateTime date, bool ignoreOrientation)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
+
+            if (date == null)
+                throw new ArgumentNullException("date");
+
+            if (0 < source.Position)
+                source.Seek(0, SeekOrigin.Begin);
+
+            // Create BitmapDecoder for a lossless transcode.
+            var sourceDecoder = BitmapDecoder.Create(
+                source,
+                BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreColorProfile,
+                BitmapCacheOption.None);
+
+            var destDecoder = BitmapDecoder.Create(
+                dest,
+                BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreColorProfile,
+                BitmapCacheOption.None);
+
+            // Check if the source image data is in JPG format.
+            if (!sourceDecoder.CodecInfo.FileExtensions.Contains("jpg"))
+                return null;
+
+            if ((sourceDecoder.Frames[0] == null) || (sourceDecoder.Frames[0].Metadata == null))
+                return null;
+
+            var sourceMetadata = sourceDecoder.Frames[0].Metadata.Clone() as BitmapMetadata;
+
+            // Add padding (4KiB) to metadata.
+            queryPadding.ForEach(x => sourceMetadata.SetQuery(x, 4096U));
+
+            using var ms = new MemoryStream();
+            // Perform a lossless transcode with metadata which includes added padding.
+            var outcomeEncoder = new JpegBitmapEncoder();
+
+            outcomeEncoder.Frames.Add(BitmapFrame.Create(
+                destDecoder.Frames[0],
+                destDecoder.Frames[0].Thumbnail,
+                sourceMetadata,
+                destDecoder.Frames[0].ColorContexts));
+
+            outcomeEncoder.Save(ms);
+
+            // Create InPlaceBitmapMetadataWriter.
+            ms.Seek(0, SeekOrigin.Begin);
+
+            var outcomeDecoder = BitmapDecoder.Create(ms, BitmapCreateOptions.None, BitmapCacheOption.Default);
+
+            var metadataWriter = outcomeDecoder.Frames[0].CreateInPlaceBitmapMetadataWriter();
+
+            // Edit date taken field by accessing property of InPlaceBitmapMetadataWriter.
+            metadataWriter.DateTaken = date.ToString();
+
+            // Edit date taken field by using query with path string.
+            metadataWriter.SetQuery("/app1/ifd/exif/{ushort=36867}", date.ToString("yyyy:MM:dd HH:mm:ss"));
+
+            if (ignoreOrientation)
+            {
+                metadataWriter.SetQuery("/app1/ifd/exif:{uint=274}", 1U);
+            }
+
+            // Try to save edited metadata to stream.
+            if (metadataWriter.TrySave())
+            {
+                Debug.WriteLine("InPlaceMetadataWriter succeeded!");
+                return ms.ToArray();
+            }
+            else
+            {
+                Debug.WriteLine("InPlaceMetadataWriter failed!");
+                return null;
+            }
+        }
+
+        public static bool RotateExif(string path, RotateFlipType rotation)
+        {
+
+            using var source = new MemoryStream(File.ReadAllBytes(path));
+
+            
+
+            // Create BitmapDecoder for a lossless transcode.
+            var sourceDecoder = BitmapDecoder.Create(
+                source,
+                BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreColorProfile,
+                BitmapCacheOption.None);
+
+            // Check if the source image data is in JPG format.
+            if (!sourceDecoder.CodecInfo.FileExtensions.Contains("jpg"))
+                return false;
+
+            if ((sourceDecoder.Frames[0] == null) || (sourceDecoder.Frames[0].Metadata == null))
+                return false;
+
+            var sourceMetadata = sourceDecoder.Frames[0].Metadata.Clone() as BitmapMetadata;
+
+            // Add padding (4KiB) to metadata.
+            queryPadding.ForEach(x => sourceMetadata.SetQuery(x, 4096U));
+
+            using var ms = new MemoryStream();
+            // Perform a lossless transcode with metadata which includes added padding.
+            var outcomeEncoder = new JpegBitmapEncoder();
+
+            outcomeEncoder.Frames.Add(BitmapFrame.Create(
+                sourceDecoder.Frames[0],
+                sourceDecoder.Frames[0].Thumbnail,
+                sourceMetadata,
+                sourceDecoder.Frames[0].ColorContexts));
+
+            outcomeEncoder.Save(ms);
+
+            // Create InPlaceBitmapMetadataWriter.
+            ms.Seek(0, SeekOrigin.Begin);
+
+            var outcomeDecoder = BitmapDecoder.Create(ms, BitmapCreateOptions.None, BitmapCacheOption.Default);
+
+            var metadataWriter = outcomeDecoder.Frames[0].CreateInPlaceBitmapMetadataWriter();
+
+            var rot = GetExifOrientation(rotation);
+            metadataWriter.SetQuery("/app1/ifd/exif:{uint=274}", rot);
+
+
+            // Try to save edited metadata to stream.
+            if (metadataWriter.TrySave())
+            {
+                Debug.WriteLine("InPlaceMetadataWriter succeeded!");
+                using var file = File.Open(path, FileMode.Open);
+                file.Write(ms.ToArray(), 0, (int)ms.Length);
+                file.Close();
+                return true;
+            }
+            else
+            {
+                Debug.WriteLine("InPlaceMetadataWriter failed!");
+                return false;
+            }
+        }
+
     }
 }

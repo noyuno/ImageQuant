@@ -23,11 +23,7 @@ namespace ImageQuant
             }
             catch (Exception ex)
             {
-                var d = new ThreadExceptionDialog(ex)
-                {
-                    Text = $"{Application.ProductName}: Main()"
-                };
-                d.ShowDialog();
+                new ThreadExceptionDialog(ex).ShowDialog();
             }
 
         }

@@ -12,6 +12,26 @@ namespace ImageQuant
 {
     class ListViewFileItem : ListViewItem
     {
+        public bool Success;
+
+        private string _FileName;
+        public string FileName
+        {
+            get
+            {
+                if (FileInfo != null)
+                {
+                    return FileInfo.FullName;
+                }
+                else
+                {
+                    return _FileName;
+                }
+            }
+        }
+
+        public string Message;
+
         [Category("変換結果")]
         public ConverterResult ConverterResult { get; set; }
 
@@ -20,15 +40,23 @@ namespace ImageQuant
 
         public Image Thumbnail { get; set; }
 
+        public int ThumbnailFallback { get; set; }
+
         public ListViewFileItem():base()
         {
         }
 
-        public ListViewFileItem(ConverterResult converterResult, Image thumbnail)
+        public ListViewFileItem(bool success, string filename, string message) : base()
+        {
+            Success = success;
+            _FileName = filename;
+            Message = message;
+        }
+
+        public ListViewFileItem(ConverterResult converterResult)
     : base(Path.GetFileName(converterResult.DestPath), converterResult.DestFileInfo.FullName)
         {
             InitFromConverterResult(converterResult);
-            Thumbnail = thumbnail;
         }
 
         //public ListViewFileItem(ConverterResult converterResult)
@@ -56,11 +84,10 @@ namespace ImageQuant
             }            
         }
 
-        public ListViewFileItem(FileInfo fileInfo, Image thumbnail)
+        public ListViewFileItem(FileInfo fileInfo)
             : base(fileInfo.Name, fileInfo.FullName)
         {
             FileInfo = fileInfo;
-            Thumbnail = thumbnail;
             ToolTipText = $"{FileInfo.Name}\r\n{QImaging.FileSizeToString(FileInfo.Length)}\r\n";
         }
 

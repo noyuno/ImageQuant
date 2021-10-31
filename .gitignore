@@ -364,3 +364,5 @@ FodyWeavers.xsd
 /icon/baseline_file_download_done_black_48dp.png
 /icon/baseline_tune_black_48dp.png
 /ImageQuant/CustomPropertyTab.cs
+
+testdata/

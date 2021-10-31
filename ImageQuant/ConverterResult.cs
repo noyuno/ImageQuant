@@ -54,6 +54,19 @@ namespace ImageQuant
         [Category("2_出力")]
         public long Quality { get; }
 
+        [Category("3_処理")]
+        public bool UsePngQuant { get; }
+
+
+        [Category("3_処理")]
+        public bool UseGhostscript { get; }
+
+        [Category("3_処理")]
+        public RotateFlipType Rotate { get; set; }
+
+        [Category("3_処理")]
+        public bool CopyMetadata { get; }
+
         //public Image Thumbnail;
 
         public ConverterResult()
@@ -61,7 +74,7 @@ namespace ImageQuant
 
         }
 
-        public ConverterResult(bool success, string errorMessage, string source, string dest, int sourcewidth, int sourceheight, int destwidth, int destheight, FileInfo sourceFileInfo, FileInfo destFileInfo, QFileType format, long quality, long depth)
+        public ConverterResult(bool success, string errorMessage, string source, string dest, int sourcewidth, int sourceheight, int destwidth, int destheight, FileInfo sourceFileInfo, FileInfo destFileInfo, QFileType format, long quality, long depth, bool pngquant, bool gs, RotateFlipType rotate, bool metadata)
         {
             Success = success;
             ErrorMessage = errorMessage;
@@ -76,6 +89,10 @@ namespace ImageQuant
             QFileType = format;
             Quality = quality;
             ColorDepth = depth;
+            UsePngQuant = pngquant;
+            UseGhostscript = gs;
+            Rotate = rotate;
+            CopyMetadata = metadata;
             //Thumbnail = thumbnail;
         }
 
