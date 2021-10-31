@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Outlook = Microsoft.Office.Interop.Outlook;
-using System.IO.Compression;
-using System.IO;
-using System.Windows.Forms;
-using ImageQuant.Properties;
-using System.Diagnostics;
-using System.Collections.Specialized;
+﻿using ImageQuant.Properties;
 using Microsoft.VisualBasic.FileIO;
+using System.Collections.Specialized;
+using System.Diagnostics;
+using System.IO;
+using System.IO.Compression;
+using System.Windows.Forms;
+using Outlook = Microsoft.Office.Interop.Outlook;
 
 namespace ImageQuant
 {

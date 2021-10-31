@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="TopMost" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="ThumbnailSize" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">100</Value>
@@ -105,10 +105,13 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="ParallelProcess" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">15</Value>
+      <Value Profile="(Default)">200</Value>
     </Setting>
     <Setting Name="ThumbnailFallbackInterval" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">5</Value>
+    </Setting>
+    <Setting Name="ShowThumbnailCount" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">300</Value>
     </Setting>
   </Settings>
 </SettingsFile>

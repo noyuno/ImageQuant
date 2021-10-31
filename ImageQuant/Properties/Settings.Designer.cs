@@ -25,7 +25,7 @@ namespace ImageQuant.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool TopMost {
             get {
                 return ((bool)(this["TopMost"]));
@@ -432,7 +432,7 @@ namespace ImageQuant.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("15")]
+        [global::System.Configuration.DefaultSettingValueAttribute("200")]
         public int ParallelProcess {
             get {
                 return ((int)(this["ParallelProcess"]));
@@ -451,6 +451,18 @@ namespace ImageQuant.Properties {
             }
             set {
                 this["ThumbnailFallbackInterval"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("300")]
+        public int ShowThumbnailCount {
+            get {
+                return ((int)(this["ShowThumbnailCount"]));
+            }
+            set {
+                this["ShowThumbnailCount"] = value;
             }
         }
     }

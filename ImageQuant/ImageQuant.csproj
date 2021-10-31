@@ -47,12 +47,13 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
+    <DebugType>embedded</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -183,7 +184,12 @@
   <PropertyGroup>
     <PostBuildEvent>Copy $(SolutionDir)\lib $(TargetDir)
 mkdir $(TargetDir)\license
-Copy $(SolutionDir)\license $(TargetDir)\license</PostBuildEvent>
+Copy $(SolutionDir)\license $(TargetDir)\license
+del $(TargetDir)\Microsoft.VisualStudio.TestPlatform.*.dll
+Del $(TargetDir)\Microsoft.TestPlatform.AdapterUtilities.dll
+del $(TargetDir)\*.xml
+rd /s /q $(TargetDir)\ja
+</PostBuildEvent>
   </PropertyGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

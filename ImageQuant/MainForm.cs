@@ -82,7 +82,7 @@ namespace ImageQuant
         //            }
         //        }
         //        listView.EndUpdate();
-        //    };
+        //    }; 
         //    ThumbnailFallbackTimer.Start();
         //}
 
@@ -339,7 +339,7 @@ namespace ImageQuant
                     var f = new List<string>();
                     for (int fi = 0; fi < filenames.Count && fi < num; fi++)
                     {
-                        f.Add(filenames[i]);
+                        f.Add(filenames[fi]);
                     }
 
                     var convertimages = await ConvertImages(f, (count, r) =>
@@ -444,33 +444,42 @@ namespace ImageQuant
                 }, UpdateListViewCancellationToken.Token)).ToList();
                 // store selected/checked items
                 var checkeditems = listView.CheckedItems.Cast<ListViewFileItem>()
-                    .Select((x) => x.FileInfo.FullName).ToArray();
+                    .Select((x) => x.FileInfo.FullName).ToHashSet();
                 var selecteditems = listView.SelectedItems.Cast<ListViewFileItem>()
-                    .Select((x) => x.FileInfo.FullName).ToArray();
+                    .Select((x) => x.FileInfo.FullName).ToHashSet();
                 var focused = listView.FocusedItem != null ? listView.FocusedItem.Index : 0;
                 focused = focused == 0 && listView.SelectedItems.Count > 0 ? listView.SelectedItems[0].Index : focused;
                 focused = focused == 0 && listView.CheckedItems.Count > 0 ? listView.CheckedItems[0].Index : focused;
                 listView.BeginUpdate();
                 listView.Items.Clear();
                 listView.LargeImageList.Images.Clear();
+                listView.LargeImageList.Images.Add("general_file", Resources.general_file);
 
                 var failedret = new List<string>();
                 for (int i = 0; i < ret.Count; i++)
                 {
                     if (ret[i].Success)
                     {
-                        
-                        listView.LargeImageList.Images.Add(ret[i].FileInfo.FullName, ret[i].Thumbnail);
+                        if (ret[i].Thumbnail != null)
+                        {
+                            listView.LargeImageList.Images.Add(ret[i].FileInfo.FullName, ret[i].Thumbnail);
+                        }
+                        else
+                        {
+                            ret[i].ImageKey = "general_file";  
+                        }
 
                         ret[i].Checked = checkeditems.Contains(ret[i].FileInfo.FullName);
                         ret[i].Selected = selecteditems.Contains(ret[i].FileInfo.FullName);
-                        listView.Items.Add(ret[i]);
+                        //listView.Items.Add(ret[i]);
                     }
                     else
                     {
                         failedret.Add($"{ret[i].FileName}:{ret[i].Message}");
                     }
                 }
+                listView.Items.AddRange(ret.ToArray());
+
                 if (failedret.Count > 0)
                 {
                     new AskForm().Show(this, $"{ret.Count}ファイルのうち、次のファイル(n={failedret.Count})は取得できませんでした。\r\n{string.Join("\r\n", failedret)}", "取得失敗", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -550,10 +559,13 @@ namespace ImageQuant
                           {
                               ret = new ListViewFileItem(new FileInfo(files[x]));
                           }
-                          GetThumbnail(ret);
-                          if (ret.ThumbnailFallback > 0)
+                          if (files.Length < Settings.Default.ShowThumbnailCount)
                           {
-                              ThumbnailFallbackItems.Add(ret);
+                              GetThumbnail(ret);
+                              if (ret.ThumbnailFallback > 0)
+                              {
+                                  ThumbnailFallbackItems.Add(ret);
+                              }
                           }
                           if (ct.IsCancellationRequested)
                               ct.ThrowIfCancellationRequested();
