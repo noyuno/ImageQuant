@@ -105,7 +105,7 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="ParallelProcess" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">200</Value>
+      <Value Profile="(Default)">10</Value>
     </Setting>
     <Setting Name="ThumbnailFallbackInterval" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">5</Value>

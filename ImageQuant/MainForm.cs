@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Threading;
+using System.Collections.Concurrent;
 
 namespace ImageQuant
 {
@@ -332,24 +333,31 @@ namespace ImageQuant
 
             try
             {
-                var ret = new List<ConverterResult>();
-                for (int i = 0; i < filenames.Count; i += Settings.Default.ParallelProcess)
-                {
-                    var f = new List<string>();
-                    for (int fi = i; fi < filenames.Count && fi < i + Settings.Default.ParallelProcess; fi++)
-                    {
-                        f.Add(filenames[fi]);
-                    }
+                //var ret = new List<ConverterResult>();
+                //for (int i = 0; i < filenames.Count; i += Settings.Default.ParallelProcess)
+                //{
+                //var f = new List<string>();
+                //for (int fi = i; fi < filenames.Count && fi < i + Settings.Default.ParallelProcess; fi++)
+                //{
+                //    f.Add(filenames[fi]);
+                //}
 
-                    var convertimages = await ConvertImages(f, (count, r) =>
-                    {
-                        toolStripProgressBar.Visible = true;
-                        toolStripProgressBar.Value = count + i;
-                        toolStripStatusLabel.Text = $"{count + i} / {filenames.Count}: 変換中...";
-                    }, ConvertCancellationToken.Token);
-                    ret.AddRange(convertimages);
+                //var convertimages = await ConvertImages(f, (count, r) =>
+                //{
+                //    toolStripProgressBar.Visible = true;
+                //    toolStripProgressBar.Value = count + i;
+                //    toolStripStatusLabel.Text = $"{count + i} / {filenames.Count}: 変換中...";
+                //}, ConvertCancellationToken.Token);
+                //ret.AddRange(convertimages);
 
-                }
+                //}
+                var ret = await ConvertImages(filenames, (count, r) =>
+                  {
+                      toolStripProgressBar.Visible = true;
+                      toolStripProgressBar.Value = count;
+                      toolStripStatusLabel.Text = $"{count} / {filenames.Count}: 変換中...";
+
+                  }, ConvertCancellationToken.Token);
 
                 converterResultList.AddRange(ret);
                 var failedret = ret.Where((x) => !x.Success);
@@ -362,10 +370,17 @@ namespace ImageQuant
                         "変換失敗", MessageBoxButtons.OK,MessageBoxIcon.Error);
                 }
 
-                toolStripProgressBar.Visible = false;
-                Processing = false;
-                UpdateListView();
-                UpdateButtonEnable();
+                try
+                {
+                    toolStripProgressBar.Visible = false;
+                    Processing = false;
+                    UpdateListView();
+                    UpdateButtonEnable();
+                }
+                catch(Exception)
+                {
+
+                }
             }
             catch(OperationCanceledException e)
             {
@@ -378,50 +393,106 @@ namespace ImageQuant
             }
         }
 
-
-        private async Task<ConverterResult[]> ConvertImages(List<string> filenames, Action<int, ConverterResult> action, CancellationToken ct)
+        private async Task<List<ConverterResult>> ConvertImages(List<string> filenames, Action<int, ConverterResult> action, CancellationToken ct)
         {
-            var tasks = new List<Task<ConverterResult>>();
             var done = 0;
+            return await Task.Run<List<ConverterResult>>(() => {
+                var resultCollection = new ConcurrentBag<ConverterResult>();
+                try
+                {
+                    Parallel.ForEach(filenames,
+                    new ParallelOptions()
+                    {
+                        CancellationToken = ct,
+                        MaxDegreeOfParallelism = Settings.Default.ParallelProcess
+                    },
+                    f =>
+                    {
+                        try
+                        {
+                            var ret = converter.Convert(f);
+                            if (ct.IsCancellationRequested)
+                            {
+                                ct.ThrowIfCancellationRequested();
+                            }
+                            if (!this.IsDisposed)
+                            {
+                                lock (action)
+                                {
+                                    this.Invoke(action, ++done, ret);
+                                }
+                            }
+                            resultCollection.Add(ret);
+                        }
+                        catch (OperationCanceledException ex)
+                        {
+                            resultCollection.Add(new ConverterResult(false, ex.Message, f, "", 0, 0, 0, 0, null, null, QFileType.Unknown, 0, 0, false, false, RotateFlipType.RotateNoneFlipNone, false));
+                        }
+                        catch (Exception ex)
+                        {
+                            resultCollection.Add(new ConverterResult(false, ex.Message, f, "", 0, 0, 0, 0, null, null, QFileType.Unknown, 0, 0, false, false, RotateFlipType.RotateNoneFlipNone, false));
+                        }
 
-            for (var i = 0; i < filenames.Count; i++)
-            {
-                var x = i;
-                var task = Task.Run<ConverterResult>(() =>
-                {
-                    try
-                    {
-                        var ret = converter.Convert(filenames[x]);
-                        if (ct.IsCancellationRequested)
-                        {
-                            ct.ThrowIfCancellationRequested();
-                        }
-                        if (!this.IsDisposed)
-                        {
-                            this.Invoke(action, ++done, ret);
-                        }
-                        return ret;
-                    }
-                    catch(OperationCanceledException ex)
-                    {
-                        //new AskForm().Show(this, e.Message, "OperationCanceledException", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return new ConverterResult(false, ex.Message, filenames[x], "", 0, 0, 0, 0, null, null, QFileType.Unknown, 0, 0, false, false, RotateFlipType.RotateNoneFlipNone, false);
-                    }
-                    catch(Exception ex)
-                    {
-                        //new ThreadExceptionDialog(ex).ShowDialog();
-                        return new ConverterResult(false, ex.Message, filenames[x], "", 0, 0, 0, 0, null, null, QFileType.Unknown, 0, 0, false, false, RotateFlipType.RotateNoneFlipNone, false);
-                    }
-                    
-                }, ct);
-                tasks.Add(task);
-                if (ct.IsCancellationRequested)
-                {
-                    ct.ThrowIfCancellationRequested();
+                    });
                 }
-            }
-            return await Task.WhenAll(tasks);
+                catch(Exception ex)
+                {
+                    resultCollection.Add(new ConverterResult(false, ex.Message, "(none)", "", 0, 0, 0, 0, null, null, QFileType.Unknown, 0, 0, false, false, RotateFlipType.RotateNoneFlipNone, false));
+
+                }
+                return resultCollection.ToList();
+
+                });
+            //await t.ConfigureAwait(false);
+            //t.Wait();
+            //ret.AddRange(resultCollection);
+            
+            //return resultCollection.ToList();
         }
+
+        //private async Task<ConverterResult[]> ConvertImages(List<string> filenames, Action<int, ConverterResult> action, CancellationToken ct)
+        //{
+        //    var tasks = new List<Task<ConverterResult>>();
+        //    var done = 0;
+
+        //    for (var i = 0; i < filenames.Count; i++)
+        //    {
+        //        var x = i;
+        //        var task = Task.Run<ConverterResult>(() =>
+        //        {
+        //            try
+        //            {
+        //                var ret = converter.Convert(filenames[x]);
+        //                if (ct.IsCancellationRequested)
+        //                {
+        //                    ct.ThrowIfCancellationRequested();
+        //                }
+        //                if (!this.IsDisposed)
+        //                {
+        //                    this.Invoke(action, ++done, ret);
+        //                }
+        //                return ret;
+        //            }
+        //            catch(OperationCanceledException ex)
+        //            {
+        //                //new AskForm().Show(this, e.Message, "OperationCanceledException", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //                return new ConverterResult(false, ex.Message, filenames[x], "", 0, 0, 0, 0, null, null, QFileType.Unknown, 0, 0, false, false, RotateFlipType.RotateNoneFlipNone, false);
+        //            }
+        //            catch(Exception ex)
+        //            {
+        //                //new ThreadExceptionDialog(ex).ShowDialog();
+        //                return new ConverterResult(false, ex.Message, filenames[x], "", 0, 0, 0, 0, null, null, QFileType.Unknown, 0, 0, false, false, RotateFlipType.RotateNoneFlipNone, false);
+        //            }
+                    
+        //        }, ct);
+        //        tasks.Add(task);
+        //        if (ct.IsCancellationRequested)
+        //        {
+        //            ct.ThrowIfCancellationRequested();
+        //        }
+        //    }
+        //    return await Task.WhenAll(tasks);
+        //}
 
         public async void UpdateListView(string path = null)
         {
