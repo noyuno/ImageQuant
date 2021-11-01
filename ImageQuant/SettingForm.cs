@@ -106,7 +106,7 @@ namespace ImageQuant
 
         private void helpButton_Click(object sender, EventArgs e)
         {
-            new AskForm().Show(this, "まだありません", "", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            new AskForm().ShowDialog(this, "まだありません", "", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
         }
 
@@ -380,7 +380,7 @@ namespace ImageQuant
 
         private void openExcelTemplateButton_Click_1(object sender, EventArgs e)
         {
-            new AskForm().Show(this, "まだありません", "", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            new AskForm().ShowDialog(this, "まだありません", "", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
         }
     }

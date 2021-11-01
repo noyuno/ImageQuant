@@ -358,7 +358,7 @@ namespace ImageQuant
                     var faileditems = string.Join("\r\n",
                         failedret.Select((x) => $"{x.SourcePath}:{x.ErrorMessage}").ToArray());
                     this.Activate();
-                    new AskForm().Show(this, $"{ret.Count}ファイルのうち、次のファイル(n={failedret.Count()})は変換できませんでした。\r\n{faileditems}",
+                    new AskForm().ShowDialog(this, $"{ret.Count}ファイルのうち、次のファイル(n={failedret.Count()})は変換できませんでした。\r\n{faileditems}",
                         "変換失敗", MessageBoxButtons.OK,MessageBoxIcon.Error);
                 }
 
@@ -369,7 +369,7 @@ namespace ImageQuant
             }
             catch(OperationCanceledException e)
             {
-                new AskForm().Show(this, "処理はユーザにより中止されました。", "中止", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                new AskForm().ShowDialog(this, "処理はユーザにより中止されました。", "中止", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             finally
             {
@@ -481,7 +481,7 @@ namespace ImageQuant
 
                 if (failedret.Count > 0)
                 {
-                    new AskForm().Show(this, $"{ret.Count}ファイルのうち、次のファイル(n={failedret.Count})は取得できませんでした。\r\n{string.Join("\r\n", failedret)}", "取得失敗", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    new AskForm().ShowDialog(this, $"{ret.Count}ファイルのうち、次のファイル(n={failedret.Count})は取得できませんでした。\r\n{string.Join("\r\n", failedret)}", "取得失敗", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 //listView.Items.AddRange(ret);
                 //foreach (var r in ret)
@@ -511,7 +511,7 @@ namespace ImageQuant
             }
             catch(OperationCanceledException e)
             {
-                new AskForm().Show(this, e.Message, "OperationCanceledException", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                new AskForm().ShowDialog(this, e.Message, "OperationCanceledException", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             catch(Exception ex)
             {
@@ -612,7 +612,7 @@ namespace ImageQuant
             else
             {
                 this.Activate();
-                new AskForm().Show(this, $"サポートされていない形式:{String.Join(",", e.Data.GetFormats(true))}", "ドラッグドロップエラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                new AskForm().ShowDialog(this, $"サポートされていない形式:{String.Join(",", e.Data.GetFormats(true))}", "ドラッグドロップエラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return;
             }
@@ -751,7 +751,7 @@ namespace ImageQuant
             var items = GetSelectedPaths();
             if (items.Length == 0)
             {
-                new AskForm().Show(this, "圧縮したいファイルを1つ以上指定してください。", "", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                new AskForm().ShowDialog(this, "圧縮したいファイルを1つ以上指定してください。", "", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             toolStripProgressBar.Visible = true;
@@ -992,7 +992,7 @@ namespace ImageQuant
                     if (lvi.Index != e.Item && lvi.Text == e.Label)
                     {
                         MessageBox.Show("同名のアイテムがすでにあります。");
-                        new AskForm().Show(this, "同名のアイテムがすでにあります。", "名前変更エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        new AskForm().ShowDialog(this, "同名のアイテムがすでにあります。", "名前変更エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                         //編集をキャンセルして元に戻す
                         e.CancelEdit = true;
@@ -1009,7 +1009,7 @@ namespace ImageQuant
                 catch(Exception ex)
                 {
                     e.CancelEdit = true;
-                    new AskForm().Show(this, ex.Message, "名前変更エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    new AskForm().ShowDialog(this, ex.Message, "名前変更エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -1148,7 +1148,7 @@ namespace ImageQuant
                 }
                 if (failedret.Count > 0)
                 {
-                    new AskForm().Show(this, $"{items.Length}ファイルのうち、次のファイル(n={failedret.Count()})は回転できませんでした。\r\n{string.Join("\r\n", failedret)}",
+                    new AskForm().ShowDialog(this, $"{items.Length}ファイルのうち、次のファイル(n={failedret.Count()})は回転できませんでした。\r\n{string.Join("\r\n", failedret)}",
                         "変換失敗", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 UpdateButtonEnable();

@@ -45,14 +45,15 @@ namespace ImageQuant
                 _ => SystemIcons.WinLogo
             }, 0, 0);
             pictureBox1.Image = bmp;
+            OKButton.Focus();
         }
 
 
-        public void Show(Form form, string text, string title, MessageBoxButtons buttons, MessageBoxIcon icon)
-        {
-            Init(text, title, buttons, icon);
-            this.Show(form);
-        }
+        //public void Show(Form form, string text, string title, MessageBoxButtons buttons, MessageBoxIcon icon)
+        //{
+        //    Init(text, title, buttons, icon);
+        //    this.Show(form);
+        //}
 
         public DialogResult ShowDialog(Form form, string text, string title, MessageBoxButtons buttons, MessageBoxIcon icon)
         {
