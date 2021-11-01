@@ -54,18 +54,14 @@ namespace ImageQuant
         {
             var sourceFileInfo = new FileInfo(sourceFilename);
             var sourceFileType = QImaging.GetFileType(sourceFilename);
-            if(sourceFileType==QFileType.Unknown)
+            return sourceFileType switch
             {
-                return new ConverterResult(false, "このファイルは画像ファイルではないようです。", sourceFilename, "", 0, 0, 0, 0, sourceFileInfo, null, QFileType.Unknown, 0, 0, false, false, RotateFlipType.RotateNoneFlipNone, false);
-            }
-            else if (sourceFileType == QFileType.Pdf)
-            {
-                return ConvertFromPDF(sourceFilename, sourceFileInfo);
-            }
-            else
-            {
-                return ConvertImage(sourceFilename, sourceFileInfo);
-            }
+                QFileType.Pdf => ConvertFromPDF(sourceFilename, sourceFileInfo),
+                QFileType.Unknown => new ConverterResult(false, "このファイルは画像ファイルではないようです。",
+                    sourceFilename, "", 0, 0, 0, 0, sourceFileInfo, null, QFileType.Unknown, 0, 0,
+                    false, false, RotateFlipType.RotateNoneFlipNone, false),
+                _ => ConvertImage(sourceFilename, sourceFileInfo)
+            };
         }
 
         private ConverterResult ConvertFromPDF(string sourceFilename, FileInfo sourceFileInfo)

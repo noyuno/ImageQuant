@@ -335,9 +335,8 @@ namespace ImageQuant
                 var ret = new List<ConverterResult>();
                 for (int i = 0; i < filenames.Count; i += Settings.Default.ParallelProcess)
                 {
-                    var num = Math.Min(Settings.Default.ParallelProcess, filenames.Count - i);
                     var f = new List<string>();
-                    for (int fi = 0; fi < filenames.Count && fi < num; fi++)
+                    for (int fi = i; fi < filenames.Count && fi < i + Settings.Default.ParallelProcess; fi++)
                     {
                         f.Add(filenames[fi]);
                     }
